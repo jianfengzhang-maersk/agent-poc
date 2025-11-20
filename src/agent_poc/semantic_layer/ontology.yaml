@@ -1,0 +1,60 @@
+ontology:
+  version: "0.1"
+
+  entities:
+    City:
+      description: "A geographical city representing operational or customer locations."
+      synonyms: []
+      attributes:
+        - name
+        - aliases
+      relationships:
+        has_facility: "Facility"
+
+    Facility:
+      description: "A location such as a terminal, depot, warehouse, or customer facility."
+      synonyms: []
+      attributes:
+        - name
+        - aliases
+        - category            # operational | customer
+        - subtype             # terminal | depot | cfs | warehouse | factory | store
+        - code                # optional
+      relationships:
+        located_in: "City"
+        hosts_event: "ContainerEvent"
+
+    Shipment:
+      description: "A shipment or booking entity representing a transport order."
+      synonyms:
+        - booking
+        - bkg
+        - shipment
+      attributes:
+        - id
+      relationships:
+        has_container: "Container"
+
+    Container:
+      description: "A shipping container associated with events and shipments."
+      synonyms: []
+      attributes:
+        - container_no
+        - container_type
+        - height
+        - max_payload
+      relationships:
+        belongs_to: "Shipment"
+        has_event: "ContainerEvent"
+
+    ContainerEvent:
+      description: "An operational event related to a container."
+      synonyms:
+        - move
+        - event
+      attributes:
+        - event_type          # gate_in | gate_out | load | discharge | eta | arrival
+        - timestamp
+      relationships:
+        occurs_at: "Facility"
+        for_container: "Container"

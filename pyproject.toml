@@ -1,0 +1,22 @@
+[project]
+name = "agent-poc"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Jeff Zhang", email = "jianfeng.zhang@maersk.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "dotenv>=0.9.9",
+    "dspy>=3.0.4",
+    "langgraph>=1.0.3",
+    "mlflow>=3.6.0",
+]
+
+[project.scripts]
+agent-poc = "agent_poc:main"
+
+[build-system]
+requires = ["uv_build>=0.8.19,<0.9.0"]
+build-backend = "uv_build"

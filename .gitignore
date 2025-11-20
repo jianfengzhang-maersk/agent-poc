@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.cursorignore
+/.deepeval
+.env
+/test/evaluation/results
+results/
+/mlruns
+/src/mlruns
+/mlartifacts
+*.pyc
+.history
+.DS_Store
+.vscode
+.idea

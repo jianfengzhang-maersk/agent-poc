@@ -1,0 +1,78 @@
+examples:
+  - query: "How many terminals are in Singapore?"
+    entities:
+      - type: "City"
+        value: "Singapore"
+      - type: "Facility"
+        value: "terminals"
+    intent: "facility_count"
+  
+  - query: "Where is container TEMU9876543 located?"
+    entities:
+      - type: "Container"
+        value: "TEMU9876543"
+      - type: "Facility"
+        value: "Where"  
+    intent: "container_tracking"
+  
+  - query: "Show me shipment details for booking 987654321"
+    entities:
+      - type: "Shipment"
+        value: "987654321"
+    intent: "shipment_details"
+  
+  - query: "How many containers are linked to booking 111222333?"
+    entities:
+      - type: "Shipment"
+        value: "111222333"
+      - type: "Container"
+        value: "containers"        
+    intent: "shipment_container_count"
+  
+  - query: "What is the weight capacity of a 20 REEF container?"
+    entities:
+      - type: "Container"
+        value: "20 REEF container"
+    intent: "container_specification"
+  
+  - query: "When will container ABCD1234567 arrive?"
+    entities:
+      - type: "Container"
+        value: "ABCD1234567"
+      - type: "ContainerEvent"
+        value: "arrive"        
+    intent: "container_eta"
+  
+  - query: "How many containers were discharged at Hamburg port yesterday?"
+    entities:
+      - type: "City"
+        value: "Hamburg"
+      - type: "Facility"
+        value: "port"
+      - type: "ContainerEvent"
+        value: "discharged"
+    intent: "container_event_count"
+  
+  - query: "List all terminals in Los Angeles"
+    entities:
+      - type: "City"
+        value: "Los Angeles"
+      - type: "Facility"
+        value: "terminals"
+    intent: "facility_list"
+  
+  - query: "Display containers for shipment 555666777 in table format"
+    entities:
+      - type: "Shipment"
+        value: "555666777"
+      - type: "Container"
+        value: "containers"        
+    intent: "shipment_container_list"
+  
+  - query: "What's the current position of container WXYZ9999999?"
+    entities:
+      - type: "Container"
+        value: "WXYZ9999999"
+      - type: "Facility"
+        value: "current position"        
+    intent: "container_tracking"

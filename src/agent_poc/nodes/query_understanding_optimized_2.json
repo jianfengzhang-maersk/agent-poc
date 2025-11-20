@@ -1,0 +1,135 @@
+{
+  "predict.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "query": "Where is my container HASU1533926 on 20July2025?",
+        "ontology_entities": [
+          "City: A geographical city representing operational or customer locations.",
+          "Facility: A location such as a terminal, depot, warehouse, or customer facility.",
+          "Shipment: A shipment or booking entity representing a transport order.",
+          "Container: A shipping container associated with events and shipments.",
+          "ContainerEvent: An operational event related to a container."
+        ],
+        "reasoning": "The user is asking for the location of a specific container on a given date. The container is identified by its unique identifier (HASU1533926) and the date is specified as 20July2025. The entities involved are the container itself and the date.",
+        "entities": [
+          {
+            "type": "Container",
+            "value": "HASU1533926"
+          },
+          {
+            "type": "ContainerEvent",
+            "value": "20July2025"
+          }
+        ],
+        "intent": "container_location"
+      },
+      {
+        "query": "How many terminals are there in Shanghai? List their code in a single line.",
+        "ontology_entities": [
+          "City: A geographical city representing operational or customer locations.",
+          "Facility: A location such as a terminal, depot, warehouse, or customer facility.",
+          "Shipment: A shipment or booking entity representing a transport order.",
+          "Container: A shipping container associated with events and shipments.",
+          "ContainerEvent: An operational event related to a container."
+        ],
+        "entities": [
+          {
+            "type": "City",
+            "value": "Shanghai"
+          },
+          {
+            "type": "Facility",
+            "value": "terminals"
+          }
+        ],
+        "intent": "facility_list"
+      },
+      {
+        "query": "How many terminals are there in Delhi?",
+        "ontology_entities": [
+          "City: A geographical city representing operational or customer locations.",
+          "Facility: A location such as a terminal, depot, warehouse, or customer facility.",
+          "Shipment: A shipment or booking entity representing a transport order.",
+          "Container: A shipping container associated with events and shipments.",
+          "ContainerEvent: An operational event related to a container."
+        ],
+        "entities": [
+          {
+            "type": "City",
+            "value": "Delhi"
+          },
+          {
+            "type": "Facility",
+            "value": "terminals"
+          }
+        ],
+        "intent": "facility_count"
+      },
+      {
+        "query": "How many containers were gated out of Sydney terminal on 10July2025?",
+        "ontology_entities": [
+          "City: A geographical city representing operational or customer locations.",
+          "Facility: A location such as a terminal, depot, warehouse, or customer facility.",
+          "Shipment: A shipment or booking entity representing a transport order.",
+          "Container: A shipping container associated with events and shipments.",
+          "ContainerEvent: An operational event related to a container."
+        ],
+        "entities": [
+          {
+            "type": "City",
+            "value": "Sydney"
+          },
+          {
+            "type": "Facility",
+            "value": "terminal"
+          },
+          {
+            "type": "Container",
+            "value": "containers"
+          },
+          {
+            "type": "ContainerEvent",
+            "value": "gated out"
+          }
+        ],
+        "intent": "container_event_count"
+      }
+    ],
+    "signature": {
+      "instructions": "Interpret the user query by identifying the ontology entities mentioned, deducing the high-level intent behind the query, and providing the reasoning behind these interpretations. Output the results as a JSON object with the following fields in order: 'reasoning', 'entities', and 'intent'. The 'reasoning' field should outline the thought process behind determining the ontology entities and the user's intent. The 'entities' field should list dictionaries containing the keys 'type' and 'value' for each explicitly mentioned entity within the query, with 'type' corresponding to the entity'sontology type, and 'value' to the surface mention text in the query. The 'intent' field should be a short, descriptive label summarizing the user's goal or question.",
+      "fields": [
+        {
+          "prefix": "Query:",
+          "description": "User's natural language query."
+        },
+        {
+          "prefix": "Ontology Entities:",
+          "description": "A list of ontology entity types along with their descriptions.\nEach entry is in the form: 'EntityName: Description'."
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Entities:",
+          "description": "Entities explicitly mentioned in the query. Each must have keys: 'type' (OntologyEntityType) and 'value' (surface mention text)."
+        },
+        {
+          "prefix": "Intent:",
+          "description": "A short high-level intent label capturing the user's goal."
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.0.4",
+      "cloudpickle": "3.1"
+    }
+  }
+}
