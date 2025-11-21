@@ -10,7 +10,6 @@ DspyHelper.init()
 
 semantic_layer = build_semantic_layer(
     "src/agent_poc/semantic_layer/ontology.yaml",
-    "src/agent_poc/semantic_layer/tools.yaml",
 )
     
 # Build entity descriptions from semantic layer

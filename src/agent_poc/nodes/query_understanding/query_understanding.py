@@ -67,7 +67,6 @@ if __name__ == "__main__":
     
     sl = build_semantic_layer(
         "src/agent_poc/semantic_layer/ontology.yaml",
-        "src/agent_poc/semantic_layer/tools.yaml",
     )
 
     # Step 1 Module
