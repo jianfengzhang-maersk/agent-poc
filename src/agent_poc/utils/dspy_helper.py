@@ -23,7 +23,7 @@ class DspyHelper():
             api_key = DATABRICKS_TOKEN,
             api_base = f"{DATABRICKS_HOST}/serving-endpoints"
         )
-        dspy.configure(lm=lm, cache=False, adapter = dspy.JSONAdapter())
+        dspy.configure(lm=lm)
         logger.info(f"Dspy initialized with Databricks LLM endpoint: {DATABRICKS_LLM_ENDPOINT}")
         
     
@@ -37,5 +37,5 @@ class DspyHelper():
         #     model="kimi-k2-turbo-preview",   # k2 模型
             api_base="https://api.moonshot.cn/v1"
         )
-        dspy.configure(lm=lm, cache=False, adapter = dspy.JSONAdapter())
+        dspy.configure(lm=lm)
         logger.info(f"Dspy initialized with Kimi LLM endpoint")
