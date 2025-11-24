@@ -10,14 +10,8 @@ from agent_poc.utils.dspy_helper import DspyHelper
 
 DspyHelper.init_kimi()
 
-semantic_layer = build_semantic_layer(
-    "src/agent_poc/semantic_layer/ontology.yaml",
-)
-                
-ontology_entities = [
-    f"{name}: {ent.description or ''}" for name, ent in semantic_layer.entities.items()
-]
-    
+from agent_poc.semantic_layer.runtime import build_semantic_layer, ontology_entities
+
 # 1. 构造你的 Step 1 模块
 step1 = QueryUnderstanding(ontology_entities)
 
@@ -213,68 +207,70 @@ def show_model_info(model):
     print("\n" + "="*80)
 
 
-# 5. Main execution flow
-print("\n" + "="*80)
-print("### Query Understanding Optimization Pipeline ###")
-print("="*80)
+if __name__ == "__main__":
 
-# Check if optimized model already exists
-model_path = Path(OPTIMIZED_MODEL_PATH)
-if model_path.exists():
-    print(f"\nLoading existing optimized model from {OPTIMIZED_MODEL_PATH}")
-    compiled_step1 = QueryUnderstanding(ontology_entities)
-    compiled_step1.load(OPTIMIZED_MODEL_PATH)
-    print("✓ Optimized model loaded successfully")
-    
-    # Evaluate the loaded model
-    results_loaded = evaluate_model(
-        compiled_step1, 
-        testset, 
-        query_understanding_metric,
-        "Evaluating Loaded Optimized Model"
-    )
-    
-else:
-    print("\nNo existing optimized model found. Running optimization pipeline...")
-    
-    # Step 1: Evaluate baseline model (before optimization)
-    print("\n>>> STEP 1: Baseline Evaluation (Before Optimization)")
-    baseline_results = evaluate_model(
-        step1,
-        testset,
-        query_understanding_metric,
-        "Baseline Model Performance"
-    )
-    
-    # Step 2: Train/optimize the model
-    print("\n>>> STEP 2: Model Optimization")
-    compiled_step1 = train_model(
-        step1,
-        trainset,
-        query_understanding_metric,
-        OPTIMIZED_MODEL_PATH
-    )
-    
-    # Step 3: Evaluate optimized model (after optimization)
-    print("\n>>> STEP 3: Post-Optimization Evaluation")
-    optimized_results = evaluate_model(
-        compiled_step1,
-        testset,
-        query_understanding_metric,
-        "Optimized Model Performance"
-    )
-    
-    # Step 4: Compare results
+    # 5. Main execution flow
     print("\n" + "="*80)
-    print("### Optimization Results Summary ###")
-    print("="*80)
-    print(f"Baseline Score:  {baseline_results['average_score']:.2f} ({baseline_results['average_score']*100:.1f}%)")
-    print(f"Optimized Score: {optimized_results['average_score']:.2f} ({optimized_results['average_score']*100:.1f}%)")
-    improvement = (optimized_results['average_score'] - baseline_results['average_score']) * 100
-    print(f"Improvement:     {improvement:+.1f} percentage points")
+    print("### Query Understanding Optimization Pipeline ###")
     print("="*80)
 
-# Show model information
-show_model_info(compiled_step1)
+    # Check if optimized model already exists
+    model_path = Path(OPTIMIZED_MODEL_PATH)
+    if model_path.exists():
+        print(f"\nLoading existing optimized model from {OPTIMIZED_MODEL_PATH}")
+        compiled_step1 = QueryUnderstanding(ontology_entities)
+        compiled_step1.load(OPTIMIZED_MODEL_PATH)
+        print("✓ Optimized model loaded successfully")
+        
+        # Evaluate the loaded model
+        results_loaded = evaluate_model(
+            compiled_step1, 
+            testset, 
+            query_understanding_metric,
+            "Evaluating Loaded Optimized Model"
+        )
+        
+    else:
+        print("\nNo existing optimized model found. Running optimization pipeline...")
+        
+        # Step 1: Evaluate baseline model (before optimization)
+        print("\n>>> STEP 1: Baseline Evaluation (Before Optimization)")
+        baseline_results = evaluate_model(
+            step1,
+            testset,
+            query_understanding_metric,
+            "Baseline Model Performance"
+        )
+        
+        # Step 2: Train/optimize the model
+        print("\n>>> STEP 2: Model Optimization")
+        compiled_step1 = train_model(
+            step1,
+            trainset,
+            query_understanding_metric,
+            OPTIMIZED_MODEL_PATH
+        )
+        
+        # Step 3: Evaluate optimized model (after optimization)
+        print("\n>>> STEP 3: Post-Optimization Evaluation")
+        optimized_results = evaluate_model(
+            compiled_step1,
+            testset,
+            query_understanding_metric,
+            "Optimized Model Performance"
+        )
+        
+        # Step 4: Compare results
+        print("\n" + "="*80)
+        print("### Optimization Results Summary ###")
+        print("="*80)
+        print(f"Baseline Score:  {baseline_results['average_score']:.2f} ({baseline_results['average_score']*100:.1f}%)")
+        print(f"Optimized Score: {optimized_results['average_score']:.2f} ({optimized_results['average_score']*100:.1f}%)")
+        improvement = (optimized_results['average_score'] - baseline_results['average_score']) * 100
+        print(f"Improvement:     {improvement:+.1f} percentage points")
+        print("="*80)
 
-print("\n✓ Pipeline completed!")
+    # Show model information
+    show_model_info(compiled_step1)
+
+    print("\n✓ Pipeline completed!")

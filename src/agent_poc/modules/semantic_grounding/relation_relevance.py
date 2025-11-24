@@ -1,26 +1,7 @@
 import dspy
 from typing import List, Tuple, Dict
 
-
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class Relation:
-    source: str
-    name: str
-    target: str
-
-    def key(self) -> str:
-        """Serialize to key string."""
-        return f"{self.source}.{self.name}->{self.target}"
-
-    @staticmethod
-    def from_key(key: str):
-        """Parse from key string."""
-        source, rest = key.split(".")
-        name, target = rest.split("->")
-        return Relation(source, name, target)
+from agent_poc.semantic_layer.ontology import RelationKey
 
 
 class RelationRelevanceSignature(dspy.Signature):
@@ -58,7 +39,7 @@ class RelationRelevance(dspy.Module):
         query: str,
         intent: str,
         relations: List[Tuple[str, str, str, str]],
-    ) -> Dict[Relation, str]:
+    ) -> Dict[RelationKey, str]:
 
         merged: Dict[str, str] = {}
 
@@ -71,11 +52,12 @@ class RelationRelevance(dspy.Module):
             # result.relevant is Dict[str,str]
             merged.update(result.relevant)
 
-        # convert string key → Relation dataclass
-        final: Dict[Relation, str] = {}
+        # convert string key → RelationKey tuple for downstream use
+        final: Dict[RelationKey, str] = {}
         for key, val in merged.items():
-            rel = Relation.from_key(key)
-            final[rel] = val
+            source, rest = key.split(".")
+            name, target = rest.split("->")
+            final[(source, name, target)] = val
 
         return final
 
@@ -98,18 +80,18 @@ if __name__ == "__main__":
     query_understanding.load(model_path)
 
     query = "How many containers were gated out of Sydney terminal on 20 July 2025?"
-    result = query_understanding(query=query)
-    entities = result.entities
+    qu_result = query_understanding(query=query)
+    entities = qu_result.entities
     candidated_relations = [
         (relation.from_entity, relation.name, relation.to_entity, relation.description)
         for entity in entities
         for relation in sl.list_relations(entity["type"])
     ]
     
-    module = RelationRelevance(batch_size=4)
+    relation_relevance = RelationRelevance(batch_size=4)
 
-    result = module(query=query, intent=result.intent, relations=candidated_relations)
+    relevance_result = relation_relevance(query=query, intent=qu_result.intent, relations=candidated_relations)
 
     print("\n=== Relation Relevance Results ===")
-    for rel, y in result.items():
+    for rel, y in relevance_result.items():
         print(f"{rel}: {y}")

@@ -34,6 +34,7 @@ class ToolInfo:
 # Semantic Layer Runtime
 # -------------------------
 
+
 @dataclass
 class SemanticLayer:
     # ontology
@@ -51,6 +52,10 @@ class SemanticLayer:
         """Exact match on entity name (case sensitive)."""
         return self.entities.get(name)
 
+    def has_entity(self, name: str) -> bool:
+        """Check if an entity exists in the ontology."""
+        return name in self.entities
+    
     def find_entity_by_label(self, label: str) -> Optional[EntitySchema]:
         """
         Fuzzy-ish lookup: match against name or synonyms (case-insensitive).
@@ -64,10 +69,14 @@ class SemanticLayer:
                 return ent
         return None
 
-    def get_relation(self, from_entity: str, name: str, to_entity: str) -> Optional[RelationSchema]:
+    def get_relation(
+        self, from_entity: str, name: str, to_entity: str
+    ) -> Optional[RelationSchema]:
         return self.relations.get((from_entity, name, to_entity))
 
-    def get_tools_for_relation(self, from_entity: str, name: str, to_entity: str) -> List[ToolInfo]:
+    def get_tools_for_relation(
+        self, from_entity: str, name: str, to_entity: str
+    ) -> List[ToolInfo]:
         return self.tools_by_relation.get((from_entity, name, to_entity), [])
 
     def get_tools_for_entity(self, entity_name: str) -> List[ToolInfo]:
@@ -82,8 +91,10 @@ class SemanticLayer:
         return [r for r in self.relations.values() if r.to_entity == entity_name]
 
     def list_relations(self, entity_name: str) -> List[RelationSchema]:
-        return self.list_relations_from(entity_name) + self.list_relations_to(entity_name)
-    
+        return self.list_relations_from(entity_name) + self.list_relations_to(
+            entity_name
+        )
+
     def list_entities(self) -> List[EntitySchema]:
         """List all entities in the ontology."""
         return list(self.entities.values())
@@ -159,26 +170,32 @@ def build_semantic_layer(
     )
 
 
+semantic_layer = build_semantic_layer(
+    "src/agent_poc/semantic_layer/ontology.yaml",
+)
+
+# Build ontology entity descriptions list
+ontology_entities = [
+    (name, ent.description) for name, ent in semantic_layer.entities.items()
+]
+
+
 if __name__ == "__main__":
 
-    sl = build_semantic_layer(
-        "src/agent_poc/semantic_layer/ontology.yaml",
-    )
-
     # 1) Find entity
-    city = sl.get_entity("City")
+    city = semantic_layer.get_entity("City")
     print(city)
 
     # 2) List all outgoing relations from City
-    for rel in sl.list_relations_from("City"):
+    for rel in semantic_layer.list_relations_from("City"):
         print("City --", rel.name, "-->", rel.to_entity)
 
     # 3) Find all tools for City→Facility(has_facility)
-    tools = sl.get_tools_for_relation("City", "has_facility", "Facility")
+    tools = semantic_layer.get_tools_for_relation("City", "has_facility", "Facility")
     for t in tools:
         print("tool for City.has_facility:", t.name)
 
     # 4) Find all entity-level tools for Container entity
-    container_tools = sl.get_tools_for_entity("Container")
+    container_tools = semantic_layer.get_tools_for_entity("Container")
     for t in container_tools:
         print("entity-level tool for Container:", t.name)

@@ -1,16 +1,7 @@
-from typing import List
+from typing import List, Tuple, Dict
 import dspy
 from agent_poc.semantic_layer.runtime import build_semantic_layer
 
-
-semantic_layer = build_semantic_layer(
-    "src/agent_poc/semantic_layer/ontology.yaml",
-)
-
-# Build ontology entity descriptions list
-ontology_entities = [
-    f"{name}: {ent.description or ''}" for name, ent in semantic_layer.entities.items()
-]
 
 # ------------------------------------------------------------
 # Step 1 Signature
@@ -23,18 +14,16 @@ class QueryUnderstandingSignature(dspy.Signature):
     # ---- Inputs ----
     query: str = dspy.InputField(desc="User's natural language query.")
 
-    ontology_entities: List[str] = dspy.InputField(
-        desc=(
-            "A list of ontology entity types along with their descriptions.\n"
-            "Each entry is in the form: 'EntityName: Description'."
-        )
+    ontology_entities: List[Tuple[str, str]] = dspy.InputField(
+        desc=("A list of ontology entity tuples in the form (EntityName, Description).")
     )
 
     # ---- Outputs ----
-    entities: List[dict] = dspy.OutputField(
+    entities: List[Dict[str, str]] = dspy.OutputField(
         desc=(
             "Entities explicitly mentioned in the query. "
-            "Each must have keys: 'type' (OntologyEntityType) and 'value' (surface mention text)."
+            "Each must have keys: 'type' (OntologyEntityType drawn from ontology_entities) "
+            "and 'value' (surface mention text)."
         )
     )
 
@@ -65,21 +54,21 @@ class QueryUnderstanding(dspy.Module):
 
 if __name__ == "__main__":
 
-    from agent_poc.semantic_layer.runtime import build_semantic_layer
+    from agent_poc.semantic_layer.runtime import build_semantic_layer, ontology_entities
     from agent_poc.utils.dspy_helper import DspyHelper
 
     DspyHelper.init()
-
-
 
     # Step 1 Module
     step1 = QueryUnderstanding(ontology_entities)
 
     # Test query
-    query = "How many containers were gated out of Sydney terminal on 20July2025?"
+    sample_query = (
+        "How many containers were gated out of Sydney terminal on 20 July 2025?"
+    )
 
     # Run
-    res = step1(query, ontology_entities)
+    res = step1(sample_query, ontology_entities)
 
     print("Entities:", res.entities)
     print("Intent:", res.intent)

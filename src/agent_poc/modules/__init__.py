@@ -2,5 +2,5 @@
 
 __all__ = [
     "query_understanding",
-    "semantic_grouding",
+    "semantic_grounding",
 ]
