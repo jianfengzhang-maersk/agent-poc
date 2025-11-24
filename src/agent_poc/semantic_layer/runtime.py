@@ -81,6 +81,13 @@ class SemanticLayer:
         """List all incoming relations to an entity."""
         return [r for r in self.relations.values() if r.to_entity == entity_name]
 
+    def list_relations(self, entity_name: str) -> List[RelationSchema]:
+        return self.list_relations_from(entity_name) + self.list_relations_to(entity_name)
+    
+    def list_entities(self) -> List[EntitySchema]:
+        """List all entities in the ontology."""
+        return list(self.entities.values())
+
 
 def load_tools(tool_modules: Optional[Sequence[str]] = None) -> Dict[str, ToolInfo]:
     modules = tool_modules or DEFAULT_TOOL_MODULES

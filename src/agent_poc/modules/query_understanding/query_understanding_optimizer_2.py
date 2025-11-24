@@ -2,7 +2,7 @@ from dspy import MIPROv2, Example
 import dspy
 import yaml
 from pathlib import Path
-from agent_poc.nodes.query_understanding.query_understanding import QueryUnderstanding
+from agent_poc.modules.query_understanding.query_understanding import QueryUnderstanding
 
 
 from agent_poc.semantic_layer.runtime import build_semantic_layer
@@ -13,15 +13,13 @@ DspyHelper.init_kimi()
 semantic_layer = build_semantic_layer(
     "src/agent_poc/semantic_layer/ontology.yaml",
 )
+                
+ontology_entities = [
+    f"{name}: {ent.description or ''}" for name, ent in semantic_layer.entities.items()
+]
     
-# Build entity descriptions from semantic layer
-ontology_list = []
-for name, ent in semantic_layer.entities.items():
-    desc = ent.description or ""
-    ontology_list.append(f"{name}: {desc}")
-            
 # 1. 构造你的 Step 1 模块
-step1 = QueryUnderstanding(semantic_layer)
+step1 = QueryUnderstanding(ontology_entities)
 
 
 # 2. Load training and test data from YAML files
@@ -35,7 +33,7 @@ def load_examples_from_yaml(yaml_path: str) -> list:
     for item in data['examples']:
         example = Example(
             query=item['query'],
-            ontology_entities=ontology_list,
+            ontology_entities=ontology_entities,
             entities=item['entities'],
             intent=item['intent']
         ).with_inputs("query", "ontology_entities")
@@ -45,8 +43,8 @@ def load_examples_from_yaml(yaml_path: str) -> list:
 
 
 # Load training set and test set from YAML files (in current directory)
-trainset = load_examples_from_yaml("src/agent_poc/nodes/query_understanding/train_set.yaml")
-testset = load_examples_from_yaml("src/agent_poc/nodes/query_understanding/test_set.yaml")
+trainset = load_examples_from_yaml("src/agent_poc/modules/query_understanding/train_set.yaml")
+testset = load_examples_from_yaml("src/agent_poc/modules/query_understanding/test_set.yaml")
 
 print(f"Loaded {len(trainset)} training examples")
 print(f"Loaded {len(testset)} test examples")
@@ -117,7 +115,7 @@ from dspy.teleprompt import BootstrapFewShot
 from pathlib import Path
 
 # Path to save/load the optimized module
-OPTIMIZED_MODEL_PATH = "src/agent_poc/nodes/query_understanding/query_understanding_optimized_2.json"
+OPTIMIZED_MODEL_PATH = "src/agent_poc/modules/query_understanding/query_understanding_optimized_2.json"
 
 
 def evaluate_model(model, testset, metric_fn, title="Evaluating Model"):
@@ -141,7 +139,7 @@ def evaluate_model(model, testset, metric_fn, title="Evaluating Model"):
     scores = []
     
     for i, example in enumerate(testset, 1):
-        result = model(query=example.query, ontology_entities=ontology_list)
+        result = model(query=example.query)
         score = metric_fn(example, result)
         total_score += score
         scores.append(score)
@@ -149,7 +147,7 @@ def evaluate_model(model, testset, metric_fn, title="Evaluating Model"):
         print(f"\n[Test {i}] Score: {score:.2f}")
         print(f"Query: {example.query}")
         print(f"Expected intent: {example.intent} | Predicted: {result.intent}")
-        print(f"Expected entities: {len(example.entities)} | Predicted: {len(result.entities)}")
+        print(f"Expected entities: {example.entities} | Predicted: {result.entities}")
     
     avg_score = total_score / len(testset) if testset else 0
     print(f"\n{'='*80}")
@@ -224,7 +222,7 @@ print("="*80)
 model_path = Path(OPTIMIZED_MODEL_PATH)
 if model_path.exists():
     print(f"\nLoading existing optimized model from {OPTIMIZED_MODEL_PATH}")
-    compiled_step1 = QueryUnderstanding(semantic_layer)
+    compiled_step1 = QueryUnderstanding(ontology_entities)
     compiled_step1.load(OPTIMIZED_MODEL_PATH)
     print("✓ Optimized model loaded successfully")
     

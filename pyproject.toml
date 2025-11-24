@@ -12,6 +12,7 @@ dependencies = [
     "dspy>=3.0.4",
     "langgraph>=1.0.3",
     "mlflow>=3.6.0",
+    "networkx>=3.5",
 ]
 
 [project.scripts]

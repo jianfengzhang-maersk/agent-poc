@@ -1,5 +1,16 @@
+from typing import List
 import dspy
+from agent_poc.semantic_layer.runtime import build_semantic_layer
 
+
+semantic_layer = build_semantic_layer(
+    "src/agent_poc/semantic_layer/ontology.yaml",
+)
+
+# Build ontology entity descriptions list
+ontology_entities = [
+    f"{name}: {ent.description or ''}" for name, ent in semantic_layer.entities.items()
+]
 
 # ------------------------------------------------------------
 # Step 1 Signature
@@ -10,11 +21,9 @@ class QueryUnderstandingSignature(dspy.Signature):
     """
 
     # ---- Inputs ----
-    query: str = dspy.InputField(
-        desc="User's natural language query."
-    )
+    query: str = dspy.InputField(desc="User's natural language query.")
 
-    ontology_entities: list[str] = dspy.InputField(
+    ontology_entities: List[str] = dspy.InputField(
         desc=(
             "A list of ontology entity types along with their descriptions.\n"
             "Each entry is in the form: 'EntityName: Description'."
@@ -22,7 +31,7 @@ class QueryUnderstandingSignature(dspy.Signature):
     )
 
     # ---- Outputs ----
-    entities: list[dict] = dspy.OutputField(
+    entities: List[dict] = dspy.OutputField(
         desc=(
             "Entities explicitly mentioned in the query. "
             "Each must have keys: 'type' (OntologyEntityType) and 'value' (surface mention text)."
@@ -30,9 +39,8 @@ class QueryUnderstandingSignature(dspy.Signature):
     )
 
     intent: str = dspy.OutputField(
-        desc="A short high-level intent label capturing the user's goal."
+        desc="A short high-level intent label capturing the user's goal, less than 5 words."
     )
-
 
 
 # ------------------------------------------------------------
@@ -40,44 +48,38 @@ class QueryUnderstandingSignature(dspy.Signature):
 # ------------------------------------------------------------
 class QueryUnderstanding(dspy.Module):
 
-    def __init__(self, semantic_layer):
-        """
-        semantic_layer: SemanticLayer instance (from semantic_layer/runtime.py)
-        """
+    def __init__(self, ontology_entities: List[str]):
+        """Initialize module with a canonical ontology entity description list."""
         super().__init__()
-        self.semantic_layer = semantic_layer
+        self.ontology_entities = ontology_entities
         self.predict = dspy.ChainOfThought(QueryUnderstandingSignature)
 
-    def forward(self, query: str, ontology_entities: list[str]) -> QueryUnderstandingSignature:
-
-        # Pass typed list[str] into DSPy
-        return self.predict(
-            query=query,
-            ontology_entities=ontology_entities
-        )
+    def forward(
+        self,
+        query: str,
+        ontology_entities: List[str] | None = None,
+    ) -> QueryUnderstandingSignature:
+        """Allow DSPy evaluators/optimizers to override ontology_entities per example."""
+        return self.predict(query=query, ontology_entities=ontology_entities)
 
 
 if __name__ == "__main__":
 
-
     from agent_poc.semantic_layer.runtime import build_semantic_layer
     from agent_poc.utils.dspy_helper import DspyHelper
-    
+
     DspyHelper.init()
-    
-    sl = build_semantic_layer(
-        "src/agent_poc/semantic_layer/ontology.yaml",
-    )
+
+
 
     # Step 1 Module
-    step1 = QueryUnderstanding(sl)
+    step1 = QueryUnderstanding(ontology_entities)
 
     # Test query
     query = "How many containers were gated out of Sydney terminal on 20July2025?"
 
     # Run
-    res = step1(query)
+    res = step1(query, ontology_entities)
 
     print("Entities:", res.entities)
     print("Intent:", res.intent)
-

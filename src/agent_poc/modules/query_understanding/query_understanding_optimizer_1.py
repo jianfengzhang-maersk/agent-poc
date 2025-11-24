@@ -1,6 +1,6 @@
 from dspy import BootstrapFewShot, Example
 import dspy
-from agent_poc.nodes.query_understanding import QueryUnderstanding
+from agent_poc.modules.query_understanding import QueryUnderstanding
 
 
 from agent_poc.semantic_layer.runtime import build_semantic_layer
@@ -347,7 +347,7 @@ from dspy.teleprompt import BootstrapFewShot
 from pathlib import Path
 
 # Path to save/load the optimized module
-OPTIMIZED_MODEL_PATH = "src/agent_poc/nodes/query_understanding_optimized.json"
+OPTIMIZED_MODEL_PATH = "src/agent_poc/modules/query_understanding_optimized.json"
 
 # Check if optimized model already exists
 model_path = Path(OPTIMIZED_MODEL_PATH)

@@ -82,37 +82,33 @@ class RelationRelevance(dspy.Module):
 
 if __name__ == "__main__":
     from agent_poc.utils.dspy_helper import DspyHelper
+    from agent_poc.modules.query_understanding.query_understanding import (
+        QueryUnderstanding,
+        ontology_entities
+    )
+    from agent_poc.semantic_layer.runtime import build_semantic_layer
 
-    DspyHelper.init()
+    DspyHelper.init_kimi()
 
-    module = RelationRelevance(batch_size=4)
-
-    # Example relations from ontology
-    relations = [
-        (
-            "City",
-            "has_facility",
-            "Facility",
-            "A city contains operational or customer facilities such as terminals or depots.",
-        ),
-        (
-            "Facility",
-            "hosts_event",
-            "ContainerEvent",
-            "A facility hosts container movement events such as gate-in and gate-out.",
-        ),
-        (
-            "Shipment",
-            "has_container",
-            "Container",
-            "A shipment includes one or more containers belonging to the same booking.",
-        ),
-    ]
+    sl = build_semantic_layer(
+        "src/agent_poc/semantic_layer/ontology.yaml",
+    )
+    model_path = "src/agent_poc/modules/query_understanding/query_understanding_optimized_2.json"
+    query_understanding = QueryUnderstanding(ontology_entities)
+    query_understanding.load(model_path)
 
     query = "How many containers were gated out of Sydney terminal on 20 July 2025?"
-    intent = "container_event_count"
+    result = query_understanding(query=query)
+    entities = result.entities
+    candidated_relations = [
+        (relation.from_entity, relation.name, relation.to_entity, relation.description)
+        for entity in entities
+        for relation in sl.list_relations(entity["type"])
+    ]
+    
+    module = RelationRelevance(batch_size=4)
 
-    result = module(query=query, intent=intent, relations=relations)
+    result = module(query=query, intent=result.intent, relations=candidated_relations)
 
     print("\n=== Relation Relevance Results ===")
     for rel, y in result.items():
