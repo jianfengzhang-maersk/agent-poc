@@ -31,7 +31,7 @@ class DspyHelper():
     def init_kimi(cls):
         import os
         lm = dspy.LM(
-            model="openai/moonshot-v1-8k",
+            model="openai/kimi-k2-turbo-preview",
         # kimi = dspy.OpenAI(
             api_key=os.getenv("MOONSHOT_API_KEY"),
         #     model="kimi-k2-turbo-preview",   # k2 模型
