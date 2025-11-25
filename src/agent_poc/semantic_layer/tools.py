@@ -1,6 +1,10 @@
 import inspect
-from typing import Optional, Tuple, get_type_hints
+from typing import List, Optional, Tuple, get_type_hints
 
+from agent_poc.semantic_layer.generated_models.shipment import Shipment
+from agent_poc.semantic_layer.generated_models.containerevent import Containerevent
+from agent_poc.semantic_layer.generated_models.container import Container
+from agent_poc.semantic_layer.generated_models.facility import Facility
 from agent_poc.semantic_layer.tools_registry import TOOLS_REGISTRY
 
 
@@ -74,7 +78,7 @@ def get_events_by_facility(
     start_date: str,
     end_date: str,
     event_type: str
-) -> list[dict]:
+) -> List[Containerevent]:
     """Query container events that occurred at a specific facility."""
     pass
 
@@ -90,7 +94,7 @@ def get_events_by_container(
     start_date: str,
     end_date: str,
     event_type: str
-) -> list[dict]:
+) -> List[Containerevent]:
     """Query container movement events for a specific container."""
     pass
 
@@ -101,7 +105,7 @@ def get_events_by_container(
 @semantic_tool(
     relation=("Container", "belongs_to", "Shipment")
 )
-def get_shipment_by_container(container_id: str) -> dict:
+def get_shipment_by_container(container_id: str) -> Shipment:
     """Retrieve the shipment that a given container belongs to."""
     pass
 
@@ -112,7 +116,7 @@ def get_shipment_by_container(container_id: str) -> dict:
 @semantic_tool(
     relation=("Shipment", "has_container", "Container")
 )
-def get_containers_by_shipment(shipment_id: str) -> list[dict]:
+def get_containers_by_shipment(shipment_id: str) -> List[Container]:
     """Retrieve all containers belonging to a specific shipment."""
     pass
 
@@ -121,7 +125,7 @@ def get_containers_by_shipment(shipment_id: str) -> list[dict]:
 # 6. entity-based tool → Container
 # -------------------------
 @semantic_tool(entity="Container")
-def get_container_details(container_id: str) -> dict:
+def get_container_details(container_id: str) -> Container:
     """Retrieve metadata and physical details of a container."""
     pass
 
@@ -130,7 +134,7 @@ def get_container_details(container_id: str) -> dict:
 # 7. entity-based tool → Shipment
 # -------------------------
 @semantic_tool(entity="Shipment")
-def get_shipment_details(shipment_id: str) -> dict:
+def get_shipment_details(shipment_id: str) -> Shipment:
     """Retrieve metadata details of a shipment."""
     pass
 
@@ -139,7 +143,7 @@ def get_shipment_details(shipment_id: str) -> dict:
 # 8. entity-based tool → Facility
 # -------------------------
 @semantic_tool(entity="Facility")
-def get_facility_details(facility_id: str) -> dict:
+def get_facility_details(facility_id: str) -> Facility:
     """Retrieve facility metadata and related information."""
     pass
 

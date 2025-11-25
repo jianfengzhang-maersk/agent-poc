@@ -6,18 +6,27 @@ from typing import Optional, List, Dict, Any
 
 
 class GeoPositionStruct(BaseModel):
+    """
+    Geographic coordinates of the facility.
+    """
     latitude: Optional[float] = Field(None, description='')
     longitude: Optional[float] = Field(None, description='')
 
 
 
 class FacilityTypesItemStruct(BaseModel):
+    """
+    Item struct for FacilityTypesItemStruct
+    """
     type_code: Optional[str] = Field(None, description='')
     type_name: Optional[str] = Field(None, description='')
 
 
 
 class DefinedAreasItemStruct(BaseModel):
+    """
+    Item struct for DefinedAreasItemStruct
+    """
     area_name: Optional[str] = Field(None, description='')
     area_type_code: Optional[str] = Field(None, description='')
     location_type: Optional[str] = Field(None, description='')
@@ -25,6 +34,9 @@ class DefinedAreasItemStruct(BaseModel):
 
 
 class FacilityAvailabilitiesItemStruct(BaseModel):
+    """
+    Item struct for FacilityAvailabilitiesItemStruct
+    """
     start_time: Optional[str] = Field(None, description='')
     end_time: Optional[str] = Field(None, description='')
     availability_type: Optional[str] = Field(None, description='')
@@ -33,6 +45,9 @@ class FacilityAvailabilitiesItemStruct(BaseModel):
 
 
 class FacilityOfferingsItemStruct(BaseModel):
+    """
+    Item struct for FacilityOfferingsItemStruct
+    """
     offering_code: Optional[str] = Field(None, description='')
     offering_name: Optional[str] = Field(None, description='')
     offering_description: Optional[str] = Field(None, description='')
@@ -42,6 +57,9 @@ class FacilityOfferingsItemStruct(BaseModel):
 
 
 class Facility(BaseModel):
+    """
+    A physical location used for container operations such as terminals.
+    """
     facility_id: str = Field(..., description='Unique identifier of the facility, derived from facilityIdentifier.')
     facility_name: Optional[str] = Field(None, description='Human-readable name of the facility.')
     is_active: Optional[bool] = Field(None, description='Whether the facility is operational.')

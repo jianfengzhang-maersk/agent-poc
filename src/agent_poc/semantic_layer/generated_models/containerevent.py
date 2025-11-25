@@ -6,12 +6,18 @@ from typing import Optional, List, Dict, Any
 
 
 class GeoPositionStruct(BaseModel):
+    """
+    Latitude and longitude of the event location.
+    """
     latitude: Optional[float] = Field(None, description='')
     longitude: Optional[float] = Field(None, description='')
 
 
 
 class Containerevent(BaseModel):
+    """
+    An operational container movement event such as gate-in, gate-out, load, discharge, or customs inspection.
+    """
     event_type: Optional[str] = Field(None, description='The type of container movement event, derived from move_type (e.g., gate_in, gate_out, load, discharge).')
     event_time: Optional[datetime.datetime] = Field(None, description='The timestamp when the event occurred, derived from activity_time.')
     container_id: Optional[str] = Field(None, description='Container number, derived from equipment_number.')

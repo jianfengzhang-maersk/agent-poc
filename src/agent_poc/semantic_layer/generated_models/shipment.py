@@ -6,6 +6,9 @@ from typing import Optional, List, Dict, Any
 
 
 class BookedByStruct(BaseModel):
+    """
+    Basic commercial booking party information.
+    """
     code: Optional[str] = Field(None, description='')
     name: Optional[str] = Field(None, description='')
     office: Optional[str] = Field(None, description='')
@@ -13,18 +16,27 @@ class BookedByStruct(BaseModel):
 
 
 class ConsigneeStruct(BaseModel):
+    """
+    Consignee customer details.
+    """
     code: Optional[str] = Field(None, description='')
     name: Optional[str] = Field(None, description='')
 
 
 
 class ShipperStruct(BaseModel):
+    """
+    Shipper customer details.
+    """
     customer_code: Optional[str] = Field(None, description='')
     customer_id: Optional[str] = Field(None, description='')
 
 
 
 class ContainersItemStruct(BaseModel):
+    """
+    Item struct for ContainersItemStruct
+    """
     container_number: Optional[str] = Field(None, description='')
     container_size: Optional[int] = Field(None, description='')
     container_type: Optional[str] = Field(None, description='')
@@ -34,6 +46,9 @@ class ContainersItemStruct(BaseModel):
 
 
 class TransportPlanStruct(BaseModel):
+    """
+    Simplified current transport plan details.
+    """
     planned_load_terminal_code: Optional[str] = Field(None, description='')
     planned_vessel_code: Optional[str] = Field(None, description='')
     planned_voyage_number: Optional[str] = Field(None, description='')
@@ -42,6 +57,9 @@ class TransportPlanStruct(BaseModel):
 
 
 class LegsAfterLastDischargeItemStruct(BaseModel):
+    """
+    Item struct for LegsAfterLastDischargeItemStruct
+    """
     start_city: Optional[str] = Field(None, description='')
     end_city: Optional[str] = Field(None, description='')
     vessel_code: Optional[str] = Field(None, description='')
@@ -53,6 +71,9 @@ class LegsAfterLastDischargeItemStruct(BaseModel):
 
 
 class LegsBeforeFirstLoadItemStruct(BaseModel):
+    """
+    Item struct for LegsBeforeFirstLoadItemStruct
+    """
     start_city: Optional[str] = Field(None, description='')
     end_city: Optional[str] = Field(None, description='')
     vessel_code: Optional[str] = Field(None, description='')
@@ -64,12 +85,18 @@ class LegsBeforeFirstLoadItemStruct(BaseModel):
 
 
 class VasItemStruct(BaseModel):
+    """
+    Item struct for VasItemStruct
+    """
     vas_code: Optional[str] = Field(None, description='')
     vas_description: Optional[str] = Field(None, description='')
 
 
 
 class Shipment(BaseModel):
+    """
+    A shipment or booking representing the transport of one or more containers.
+    """
     shipment_number: str = Field(..., description='Unique shipment or booking identifier.')
     number_of_containers: Optional[int] = Field(None, description='Total number of containers in the shipment.')
     total_teu: Optional[float] = Field(None, description='Total TEU for the shipment.')
