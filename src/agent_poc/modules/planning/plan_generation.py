@@ -134,7 +134,7 @@ class TypeAwarePlanner(dspy.Module):
 
     def __init__(self) -> None:
         super().__init__()
-        # 用 CoT，让 LLM 显式走推理过程
+        # Use CoT to let LLM explicitly walk through reasoning process
         self.planner = dspy.ChainOfThought(TypeAwarePlanSignature)
 
     def forward(
@@ -147,8 +147,8 @@ class TypeAwarePlanner(dspy.Module):
         relations: List[Dict[str, Any]],
         model_schemas: Dict[str, Dict[str, Any]],
     ) -> Dict[str, Any]:
-        # 这里不做太多 pre-processing，把结构尽量原样交给 LLM，
-        # 这样方便你后面在 prompt 里观察和调整。
+        # Minimal pre-processing - pass structures as-is to LLM
+        # This makes it easier to observe and adjust prompts later
         result = self.planner(
             query=query,
             intent=intent,
@@ -159,79 +159,157 @@ class TypeAwarePlanner(dspy.Module):
             model_schemas=model_schemas
         )
 
-        # DSPy 会把输出封装在 result.steps 里
+        # DSPy wraps the output in result.steps
         return {"steps": result.steps}
 
 
 if __name__ == "__main__":
-    from agent_poc.semantic_layer.engine import build_semantic_layer
-    from agent_poc.modules.planning.planner import TypeAwarePlanner
-    from agent_poc.modules.planning.adapters import (
-        tools_to_candidate_tools,
-        entities_to_schemas,
-        relations_to_schemas,
-        models_to_schemas,
+    from agent_poc.utils.dspy_helper import DspyHelper
+    from agent_poc.modules.query_understanding.query_understanding import QueryUnderstanding
+    from agent_poc.modules.semantic_grounding.pipeline import run_semantic_grounding
+    from agent_poc.modules.semantic_grounding.relation_filtering import RelationFiltering
+    from agent_poc.semantic_layer.engine import semantic_layer, ontology_entities
+    from agent_poc.modules.planning.schema_converters import (
+        tools_to_dict,
+        entities_to_dict,
+        relations_to_dict,
+        models_to_dict,
     )
     from agent_poc.semantic_layer.generated_models.container import Container
     from agent_poc.semantic_layer.generated_models.shipment import Shipment
     from agent_poc.semantic_layer.generated_models.facility import Facility
     from agent_poc.semantic_layer.generated_models.containerevent import Containerevent
-    from agent_poc.semantic_layer.engine import semantic_layer
-    from agent_poc.utils.dspy_helper import DspyHelper
-    
-    
-    import dspy
+    import json
 
+    # Initialize DSPy
     DspyHelper.init_kimi()
     
-    # 假设你已经在别处配置好了 dspy.settings.lm = ...
-    planner = TypeAwarePlanner()
-
-    # 1) semantic layer
-    sl = semantic_layer
-
-    # 2) 上游 step 1 / 2 / 3.1 的结果（这里简化）
-    query = "How many containers were gated out of Sydney terminal on 20July2025?"
-    intent = "container_event_count"
-    extracted_entities = [
-        {"type": "City", "value": "Sydney"},
-        {"type": "ContainerEvent", "value": "gated out"},
-    ]
-
-    # 3) 选出来的 candidate tools（你已有逻辑）
-    relation_tools = sl.get_tools_for_relation("City", "has_facility", "Facility") + \
-                    sl.get_tools_for_relation("Facility", "hosts_event", "ContainerEvent")
-    # 再加上一个通用 count 工具
-    # ...
-
-    candidate_tools = tools_to_candidate_tools(relation_tools)
-
-    # 4) entity & relation schemas（只选相关的）
-    entity_schemas = entities_to_schemas(
-        [sl.entities["City"], sl.entities["Facility"], sl.entities["ContainerEvent"]]
+    print("=" * 80)
+    print("Complete Pipeline: Query Understanding → Semantic Grounding → Planning")
+    print("=" * 80)
+    
+    # Sample query
+    sample_query = "How many containers were gated out of Sydney terminal on 20 July 2025?"
+    print(f"\nQuery: {sample_query}")
+    
+    # ============================================================
+    # Step 1: Query Understanding
+    # ============================================================
+    print("\n" + "-" * 80)
+    print("Step 1: Query Understanding")
+    print("-" * 80)
+    
+    query_understanding = QueryUnderstanding(ontology_entities)
+    query_understanding.load("src/agent_poc/modules/query_understanding/query_understanding_optimized_2.json")
+    
+    qu_result = query_understanding(query=sample_query, ontology_entities=ontology_entities)
+    
+    print(f"\nExtracted entities:")
+    for entity in qu_result.entities:
+        print(f"  - {entity['type']}: {entity['value']}")
+    print(f"\nIntent: {qu_result.intent}")
+    
+    # ============================================================
+    # Step 2: Semantic Grounding
+    # ============================================================
+    print("\n" + "-" * 80)
+    print("Step 2: Semantic Grounding")
+    print("-" * 80)
+    
+    filtering_model = RelationFiltering(batch_size=4)
+    expanded_entities, active_relations = run_semantic_grounding(
+        query=sample_query,
+        entities=qu_result.entities,
+        intent=qu_result.intent,
+        filtering_model=filtering_model,
     )
-    relations = relations_to_schemas(sl.relations.values())
-
-    # 5) Pydantic model schemas（只给相关 entity）
+    
+    # Filter to valid entities only
+    expanded_entities = [
+        entity for entity in expanded_entities if semantic_layer.has_entity(entity)
+    ]
+    
+    print(f"\nExpanded entities: {expanded_entities}")
+    print(f"\nActive relations:")
+    for rel in active_relations:
+        print(f"  {rel[0]} --{rel[1]}--> {rel[2]}")
+    
+    # ============================================================
+    # Step 3: Planning
+    # ============================================================
+    print("\n" + "-" * 80)
+    print("Step 3: Type-Aware Planning")
+    print("-" * 80)
+    
+    # 3.1) Collect candidate tools based on active relations
+    candidate_tools_list = []
+    for rel in active_relations:
+        tools = semantic_layer.get_tools_for_relation(rel[0], rel[1], rel[2])
+        candidate_tools_list.extend(tools)
+    
+    # Add entity-level tools for expanded entities
+    for entity_name in expanded_entities:
+        entity_tools = semantic_layer.get_tools_for_entity(entity_name)
+        candidate_tools_list.extend(entity_tools)
+    
+    # Remove duplicates by tool name
+    seen_tools = set()
+    unique_tools = []
+    for tool in candidate_tools_list:
+        if tool.name not in seen_tools:
+            seen_tools.add(tool.name)
+            unique_tools.append(tool)
+    
+    candidate_tools = tools_to_dict(unique_tools)
+    print(f"\nCandidate tools ({len(candidate_tools)}):")
+    for tool in candidate_tools:
+        print(f"  - {tool['name']}")
+    
+    # 3.2) Prepare entity schemas for expanded entities
+    entity_schemas = entities_to_dict([
+        semantic_layer.entities[e] for e in expanded_entities
+    ])
+    
+    # 3.3) Prepare relation schemas for active relations
+    relation_schemas = relations_to_dict([
+        semantic_layer.relations[rel] for rel in active_relations
+    ])
+    
+    # 3.4) Prepare Pydantic model schemas
     models = {
         "Facility": Facility,
         "ContainerEvent": Containerevent,
         "Container": Container,
         "Shipment": Shipment,
     }
-    model_schemas = models_to_schemas(models)
-
-    # 6) 调 planner
+    model_schemas = models_to_dict(models)
+    
+    # 3.5) Run planner
+    planner = TypeAwarePlanner()
     result = planner(
-        query=query,
-        intent=intent,
-        extracted_entities=extracted_entities,
+        query=sample_query,
+        intent=qu_result.intent,
+        extracted_entities=qu_result.entities,
         candidate_tools=candidate_tools,
         entity_schemas=entity_schemas,
-        relations=relations,
+        relations=relation_schemas,
         model_schemas=model_schemas,
     )
-
+    
+    # ============================================================
+    # Output: Execution Plan
+    # ============================================================
+    print("\n" + "=" * 80)
+    print("Generated Execution Plan")
+    print("=" * 80)
+    
     plan_steps = result["steps"]
-    for index, step in enumerate(plan_steps):
-         print(f"Step {index + 1}: {step}")
+    for step in plan_steps:
+        print(f"\nStep {step['id']}: {step['tool']}")
+        print(f"  Inputs: {json.dumps(step['inputs'], indent=4)}")
+        print(f"  Output: {step['output']}")
+    
+    print("\n" + "=" * 80)
+    print(f"✓ Complete pipeline executed successfully!")
+    print(f"  Total steps in plan: {len(plan_steps)}")
+    print("=" * 80)
