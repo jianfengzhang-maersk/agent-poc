@@ -65,6 +65,17 @@ from typing import Type, Dict
 from pydantic import BaseModel
 
 
+def normalize_model_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Remove 'format: date-time' to prevent LLM from outputting ISO8601 timestamps.
+    Keep the fact that the field is a string, but not the date-time format.
+    """
+    if "properties" in schema:
+        for prop_name, prop_schema in schema["properties"].items():
+            if prop_schema.get("format") == "date-time":
+                prop_schema.pop("format", None)
+    return schema
+
 def models_to_schemas(models: Dict[str, Type[BaseModel]]) -> Dict[str, Dict[str, Any]]:
     """
     Convert Pydantic models into a compact json schema dict for the planner.
@@ -76,4 +87,6 @@ def models_to_schemas(models: Dict[str, Type[BaseModel]]) -> Dict[str, Dict[str,
         schema = model_cls.model_json_schema()
         # 这里可以按需要精简/重命名字段，先直接原样给 planner
         out[name] = schema
-    return out
+        
+    model_schemas = {k: normalize_model_schema(v) for k, v in out.items()}
+    return model_schemas

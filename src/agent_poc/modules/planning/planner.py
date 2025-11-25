@@ -8,13 +8,57 @@ from typing import List, Dict, Tuple, Any
 
 class TypeAwarePlanSignature(dspy.Signature):
     """
-    Generate a type-aware execution plan based on:
-    - user intent
-    - semantic layer entities/relations
-    - tool schemas
-    - pydantic model schema (type-level structure)
+    You are a Type-Aware Planner that generates an ordered sequence of tool calls.
+    Follow ALL rules strictly:
 
-    Output is a list of ordered tool calls with correctly-typed inputs.
+    =====================
+    ## DATE RULES
+    =====================
+    1. All dates MUST be in format "YYYY-MM-DD".
+    2. NEVER include time, timezone, or T/Z suffix.
+
+    =====================
+    ## ARRAY EXPANSION RULES
+    =====================
+    1. NEVER produce fields such as "iterate_over", "loop", "map", "for_each".
+    2. Loops belong ONLY to code generation, NOT this planner.
+    3. If a tool needs to be applied to multiple items, ALWAYS use:
+           <list_var>[*].<field>
+       Example:
+           terminals[*].facility_id
+
+    =====================
+    ## TOOL USAGE RULES
+    =====================
+    1. Each step MUST call exactly one tool.
+    2. Use ONLY the tools provided in candidate_tools.
+    3. Do NOT invent new tools or new arguments.
+    4. Inputs to tools must be:
+        - literals extracted from the query, or
+        - variables produced by earlier steps, or
+        - field paths (including nested) of earlier outputs.
+
+    =====================
+    ## FIELD-PATH RULES
+    =====================
+    Examples of allowed field paths:
+        "terminals[0].facility_id"
+        "terminals[*].facility_id"
+        "events[*].container_id"
+        "shipment.containers[*].container_number"
+
+    =====================
+    ## OUTPUT FORMAT RULES
+    =====================
+    MUST output a list of steps:
+    [
+      {
+        "id": 1,
+        "tool": "get_xxx",
+        "inputs": {...},
+        "output": "var_name"
+      }
+    ]
     """
 
     # ----- INPUTS -----
@@ -103,12 +147,6 @@ class TypeAwarePlanner(dspy.Module):
         relations: List[Dict[str, Any]],
         model_schemas: Dict[str, Dict[str, Any]],
     ) -> Dict[str, Any]:
-        """
-        Run the type-aware planner and return a dict with a 'steps' field.
-
-        上层可以直接用 result.steps 拿到 plan。
-        """
-
         # 这里不做太多 pre-processing，把结构尽量原样交给 LLM，
         # 这样方便你后面在 prompt 里观察和调整。
         result = self.planner(
@@ -118,7 +156,7 @@ class TypeAwarePlanner(dspy.Module):
             candidate_tools=candidate_tools,
             entity_schemas=entity_schemas,
             relations=relations,
-            model_schemas=model_schemas,
+            model_schemas=model_schemas
         )
 
         # DSPy 会把输出封装在 result.steps 里
