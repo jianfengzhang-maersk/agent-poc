@@ -4,9 +4,9 @@ from typing import List, Tuple, Dict
 from agent_poc.semantic_layer.ontology import RelationKey
 
 
-class RelationRelevanceSignature(dspy.Signature):
+class RelationFilteringSignature(dspy.Signature):
     """
-    Step 2.2 - LLM binary relevance classification for ontology relations.
+    Step 2.2 - LLM binary filtering classification for ontology relations.
     """
 
     query: str = dspy.InputField(desc="User question in natural language.")
@@ -28,11 +28,11 @@ class RelationRelevanceSignature(dspy.Signature):
     )
 
 
-class RelationRelevance(dspy.Module):
+class RelationFiltering(dspy.Module):
     def __init__(self, batch_size: int = 5):
         super().__init__()
         self.batch_size = batch_size
-        self.predict = dspy.ChainOfThought(RelationRelevanceSignature)
+        self.predict = dspy.ChainOfThought(RelationFilteringSignature)
 
     def forward(
         self,
@@ -41,7 +41,7 @@ class RelationRelevance(dspy.Module):
         relations: List[Tuple[str, str, str, str]],
     ) -> Dict[RelationKey, str]:
 
-        merged: Dict[str, str] = {}
+        merged: Dict[RelationKey, str] = {}
 
         # batch evaluation
         for i in range(0, len(relations), self.batch_size):
@@ -64,35 +64,33 @@ class RelationRelevance(dspy.Module):
 
 if __name__ == "__main__":
     from agent_poc.utils.dspy_helper import DspyHelper
+    from agent_poc.modules.semantic_grounding.relation_discovery import (
+        discover_relations,
+    )
+    from agent_poc.semantic_layer.engine import ontology_entities
     from agent_poc.modules.query_understanding.query_understanding import (
         QueryUnderstanding,
-        ontology_entities
-    )
-    from agent_poc.semantic_layer.engine import (
-        build_semantic_layer,
-        ONTOLOGY_SOURCE_PATH,
     )
 
     DspyHelper.init_kimi()
 
-    sl = build_semantic_layer(ONTOLOGY_SOURCE_PATH)
-    model_path = "src/agent_poc/modules/query_understanding/query_understanding_optimized_2.json"
+    model_path = (
+        "src/agent_poc/modules/query_understanding/query_understanding_optimized_2.json"
+    )
     query_understanding = QueryUnderstanding(ontology_entities)
     query_understanding.load(model_path)
 
     query = "How many containers were gated out of Sydney terminal on 20 July 2025?"
     qu_result = query_understanding(query=query)
     entities = qu_result.entities
-    candidated_relations = [
-        (relation.from_entity, relation.name, relation.to_entity, relation.description)
-        for entity in entities
-        for relation in sl.list_relations(entity["type"])
-    ]
-    
-    relation_relevance = RelationRelevance(batch_size=4)
+    candidated_relations = discover_relations(entities)
 
-    relevance_result = relation_relevance(query=query, intent=qu_result.intent, relations=candidated_relations)
+    relation_filtering = RelationFiltering(batch_size=4)
 
-    print("\n=== Relation Relevance Results ===")
-    for rel, y in relevance_result.items():
+    filtering_result = relation_filtering(
+        query=query, intent=qu_result.intent, relations=candidated_relations
+    )
+
+    print("\n=== Relation Filtering Results ===")
+    for rel, y in filtering_result.items():
         print(f"{rel}: {y}")

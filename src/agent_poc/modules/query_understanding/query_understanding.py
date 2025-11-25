@@ -56,9 +56,10 @@ if __name__ == "__main__":
 
     from agent_poc.semantic_layer.engine import build_semantic_layer, ontology_entities
     from agent_poc.utils.dspy_helper import DspyHelper
-
+    import agent_poc.utils.mlflow_helper as mlflow_helper
     DspyHelper.init()
-
+    mlflow_helper.init()
+    
     # Step 1 Module
     step1 = QueryUnderstanding(ontology_entities)
 

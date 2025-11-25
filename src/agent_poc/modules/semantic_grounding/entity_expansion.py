@@ -1,16 +1,16 @@
-# semantic_layer/graph_expansion.py
+# semantic_grounding/entity_expansion.py
 
 from typing import Dict, List, Set, Tuple
 
 from agent_poc.semantic_layer.ontology import RelationKey
 
 
-def expand_graph(
+def expand_entities(
     step1_entities: List[dict],
     relevant_relations: Dict[RelationKey, str],
 ) -> Tuple[List[str], List[RelationKey]]:
     """
-    Step 2.3: Deterministic graph expansion.
+    Step 2.3: Deterministic entity expansion.
 
     Input:
       - step1_entities: [{"type": "City", "value": "Sydney"}, ...]
@@ -62,11 +62,11 @@ if __name__ == "__main__":
         ("Shipment", "has_container", "Container"): "no",
     }
 
-    expanded_entities, used_relations = expand_graph(sample_entities, sample_relations)
+    expanded_entities, used_relations = expand_entities(
+        sample_entities, sample_relations
+    )
 
     print("Expanded entity types:", expanded_entities)
-    print("Relevant relations:")
+    print("Active relations:")
     for rel in used_relations:
         print(f"  {rel[0]} -- {rel[1]} --> {rel[2]}")
-
-

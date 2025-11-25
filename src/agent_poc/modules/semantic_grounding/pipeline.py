@@ -1,69 +1,39 @@
-"""Semantic grounding pipeline that composes relation relevance and graph expansion."""
+"""Semantic grounding pipeline that composes relation filtering and entity expansion."""
 
 from __future__ import annotations
 
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Tuple
 
-from agent_poc.modules.semantic_grounding.graph_expansion import expand_graph
-from agent_poc.modules.semantic_grounding.relation_relevance import RelationRelevance
+from agent_poc.modules.semantic_grounding.entity_expansion import expand_entities
+from agent_poc.modules.semantic_grounding.relation_discovery import discover_relations
+from agent_poc.modules.semantic_grounding.relation_filtering import RelationFiltering
 from agent_poc.semantic_layer.ontology import RelationKey
-from agent_poc.semantic_layer.engine import SemanticLayer
-
-
-def _collect_candidate_relations(
-    semantic_layer: SemanticLayer,
-    seed_entities: Sequence[dict],
-) -> List[Tuple[str, str, str, str]]:
-    """Gather unique ontology relations touching the provided entity types."""
-
-    seen: set[RelationKey] = set()
-    candidates: List[Tuple[str, str, str, str]] = []
-
-    for entity in seed_entities:
-        entity_type = entity.get("type")
-        if not entity_type:
-            continue
-
-        for rel in semantic_layer.list_relations(entity_type):
-            if rel.key in seen:
-                continue
-            seen.add(rel.key)
-            candidates.append(
-                (
-                    rel.from_entity,
-                    rel.name,
-                    rel.to_entity,
-                    rel.description or "",
-                )
-            )
-
-    return candidates
+from agent_poc.semantic_layer.engine import semantic_layer
 
 
 def run_semantic_grounding(
     query: str,
     entities: List[dict],
     intent: str,
-    semantic_layer: SemanticLayer,
-    relevance_model: RelationRelevance | None = None,
+    filtering_model: RelationFiltering | None = None,
 ) -> Tuple[List[str], List[RelationKey]]:
-    """Pipeline Step 2: relation relevance + graph expansion."""
+    """Pipeline Step 2: relation filtering + entity expansion."""
 
     if not entities:
         return [], []
 
-    relevance_model = relevance_model or RelationRelevance()
+    filtering_model = filtering_model or RelationFiltering()
 
-    candidate_relations = _collect_candidate_relations(semantic_layer, entities)
-    relevance_scores = relevance_model(
+    discovered_relations = discover_relations(entities)
+    filtered_relations = filtering_model(
         query=query,
         intent=intent,
-        relations=candidate_relations,
+        relations=discovered_relations,
     )
 
-    expanded_entities, active_relations = expand_graph(
+    expanded_entities, active_relations = expand_entities(
         step1_entities=entities,
-        relevant_relations=relevance_scores,
+        relevant_relations=filtered_relations,
     )
 
     return expanded_entities, active_relations
@@ -71,24 +41,29 @@ def run_semantic_grounding(
 
 if __name__ == "__main__":
     from agent_poc.utils.dspy_helper import DspyHelper
-    from agent_poc.modules.query_understanding.query_understanding import QueryUnderstanding
+    from agent_poc.modules.query_understanding.query_understanding import (
+        QueryUnderstanding,
+    )
     from agent_poc.semantic_layer.engine import semantic_layer, ontology_entities
 
     DspyHelper.init_kimi()
 
     qu = QueryUnderstanding(ontology_entities)
-    qu.load("src/agent_poc/modules/query_understanding/query_understanding_optimized_2.json")
+    qu.load(
+        "src/agent_poc/modules/query_understanding/query_understanding_optimized_2.json"
+    )
 
-    sample_query = "How many containers were gated out of Sydney terminal on 20 July 2025?"
+    sample_query = (
+        "How many containers were gated out of Sydney terminal on 20 July 2025?"
+    )
     qu_result = qu(query=sample_query)
 
-    relation_model = RelationRelevance(batch_size=4)
+    filtering_model = RelationFiltering(batch_size=4)
     expanded_entities, active_relations = run_semantic_grounding(
         query=sample_query,
         entities=qu_result.entities,
         intent=qu_result.intent,
-        semantic_layer=semantic_layer,
-        relevance_model=relation_model,
+        filtering_model=filtering_model,
     )
 
     expanded_entities = [
