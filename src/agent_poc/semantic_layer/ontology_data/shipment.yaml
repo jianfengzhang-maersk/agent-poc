@@ -1,0 +1,150 @@
+name: Shipment
+description: A shipment or booking representing the transport of one or more containers.
+synonyms:
+- shipment
+- booking
+- bkg
+attributes:
+  shipment_number:
+    type: string
+    primary_key: true
+    description: Unique shipment or booking identifier.
+  number_of_containers:
+    type: integer
+    description: Total number of containers in the shipment.
+  total_teu:
+    type: float
+    description: Total TEU for the shipment.
+  total_weight_kg:
+    type: float
+    description: Total weight in kilograms.
+  is_delivered:
+    type: boolean
+    description: Whether the shipment has been delivered.
+  is_loaded:
+    type: boolean
+    description: Whether shipment containers have been loaded on a vessel.
+  is_pending:
+    type: boolean
+    description: Whether the shipment is still pending operational actions.
+  place_of_receipt_city:
+    type: string
+    description: City where shipment is first received.
+  place_of_delivery_city:
+    type: string
+    description: Final delivery city of the shipment.
+  last_eta:
+    type: datetime
+    description: Latest known estimated time of arrival (derived from customer promised
+      ETA).
+  latest_schedule_update_time:
+    type: datetime
+    description: When the schedule was last updated.
+  booked_by:
+    type: object
+    description: Basic commercial booking party information.
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      office:
+        type: string
+  consignee:
+    type: object
+    description: Consignee customer details.
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+  shipper:
+    type: object
+    description: Shipper customer details.
+    properties:
+      customer_code:
+        type: string
+      customer_id:
+        type: string
+  containers:
+    type: array
+    description: List of containers associated with this shipment.
+    items:
+      type: object
+      properties:
+        container_number:
+          type: string
+        container_size:
+          type: integer
+        container_type:
+          type: string
+        weight_kg:
+          type: float
+        teu:
+          type: float
+  transport_plan:
+    type: object
+    description: Simplified current transport plan details.
+    properties:
+      planned_load_terminal_code:
+        type: string
+      planned_vessel_code:
+        type: string
+      planned_voyage_number:
+        type: string
+      estimated_final_arrival:
+        type: datetime
+  legs_after_last_discharge:
+    type: array
+    description: Operational legs after last discharge (GCSS RKEM).
+    items:
+      type: object
+      properties:
+        start_city:
+          type: string
+        end_city:
+          type: string
+        vessel_code:
+          type: string
+        service_code:
+          type: string
+        transport_mode:
+          type: string
+        arrival_time:
+          type: datetime
+        departure_time:
+          type: datetime
+  legs_before_first_load:
+    type: array
+    description: Pre-carriage or pre-load legs.
+    items:
+      type: object
+      properties:
+        start_city:
+          type: string
+        end_city:
+          type: string
+        vessel_code:
+          type: string
+        service_code:
+          type: string
+        transport_mode:
+          type: string
+        arrival_time:
+          type: datetime
+        departure_time:
+          type: datetime
+  vas:
+    type: array
+    items:
+      type: object
+      properties:
+        vas_code:
+          type: string
+        vas_description:
+          type: string
+relationships:
+  has_container:
+    target: Container
+    description: A shipment includes one or more containers that belong to the same
+      booking.

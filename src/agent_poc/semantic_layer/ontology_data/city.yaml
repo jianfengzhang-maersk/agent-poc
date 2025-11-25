@@ -1,0 +1,19 @@
+name: City
+description: A geographical city where logistics operations such as container movements,
+  terminals, and facilities exist.
+synonyms: []
+attributes:
+  city:
+    type: string
+    description: City where the facility is located.
+  country_code:
+    type: string
+    description: Country code of the facility.
+  country_name:
+    type: string
+    description: Country name of the facility.
+relationships:
+  has_facility:
+    target: Facility
+    description: A city contains operational or customer facilities such as terminals,
+      depots, or warehouses.

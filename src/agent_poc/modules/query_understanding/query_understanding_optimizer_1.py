@@ -3,14 +3,12 @@ import dspy
 from agent_poc.modules.query_understanding import QueryUnderstanding
 
 
-from agent_poc.semantic_layer.runtime import build_semantic_layer
+from agent_poc.semantic_layer.engine import build_semantic_layer, ONTOLOGY_SOURCE_PATH
 from agent_poc.utils.dspy_helper import DspyHelper
 
 DspyHelper.init()
 
-semantic_layer = build_semantic_layer(
-    "src/agent_poc/semantic_layer/ontology.yaml",
-)
+semantic_layer = build_semantic_layer(ONTOLOGY_SOURCE_PATH)
     
 # Build entity descriptions from semantic layer
 ontology_list = []

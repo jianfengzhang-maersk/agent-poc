@@ -1,6 +1,6 @@
 from typing import List, Tuple, Dict
 import dspy
-from agent_poc.semantic_layer.runtime import build_semantic_layer
+from agent_poc.semantic_layer.engine import build_semantic_layer
 
 
 # ------------------------------------------------------------
@@ -54,7 +54,7 @@ class QueryUnderstanding(dspy.Module):
 
 if __name__ == "__main__":
 
-    from agent_poc.semantic_layer.runtime import build_semantic_layer, ontology_entities
+    from agent_poc.semantic_layer.engine import build_semantic_layer, ontology_entities
     from agent_poc.utils.dspy_helper import DspyHelper
 
     DspyHelper.init()

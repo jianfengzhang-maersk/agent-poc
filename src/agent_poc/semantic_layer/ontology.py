@@ -2,9 +2,43 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import yaml
+
+
+def _extract_entities_from_payload(payload: Dict[str, Any], source: str) -> Dict[str, Any]:
+    """Normalize various ontology payload shapes into an entity dictionary."""
+
+    if not payload:
+        return {}
+
+    data = payload
+    if "ontology" in data:
+        data = data.get("ontology") or {}
+
+    if "entities" in data:
+        entities = data.get("entities") or {}
+        if not isinstance(entities, dict):
+            raise ValueError(f"'entities' section in {source} must be a mapping")
+        return entities
+
+    if "name" in data:
+        entity_name = data["name"]
+        if not entity_name:
+            raise ValueError(f"Entity definition in {source} must include a non-empty name")
+        cfg = {k: v for k, v in data.items() if k != "name"}
+        return {entity_name: cfg}
+
+    if len(data) == 1:
+        (entity_name, cfg), = data.items()
+        if isinstance(entity_name, str) and isinstance(cfg, dict):
+            return {entity_name: cfg}
+
+    raise ValueError(
+        f"Unable to extract entity definition from {source}. "
+        "Provide either an 'entities' mapping or a single entity document."
+    )
 
 
 RelationKey = Tuple[str, str, str]  # (from, relation_name, to)
@@ -39,13 +73,36 @@ class RelationSchema:
 
 def load_ontology(path: str | Path) -> Tuple[Dict[str, EntitySchema], Dict[RelationKey, RelationSchema]]:
     path = Path(path)
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
 
-    # Accept both previous schema (top-level 'ontology') and new root-level 'entities'
-    if "ontology" in data:
-        ont = data["ontology"]
-    else:
+    if path.is_dir():
+        entities_payload: Dict[str, Any] = {}
+        yaml_files = sorted(
+            [p for p in path.iterdir() if p.is_file() and p.suffix.lower() in {".yaml", ".yml"}]
+        )
+
+        if not yaml_files:
+            raise ValueError(f"ontology directory '{path}' does not contain any YAML files")
+
+        for yaml_path in yaml_files:
+            raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8")) or {}
+            extracted = _extract_entities_from_payload(raw, str(yaml_path))
+            for entity_name, cfg in extracted.items():
+                if entity_name in entities_payload:
+                    raise ValueError(
+                        f"Duplicate entity '{entity_name}' found while loading {yaml_path}"
+                    )
+                entities_payload[entity_name] = cfg
+
+        data = {"entities": entities_payload}
         ont = data
+    else:
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+        # Accept both previous schema (top-level 'ontology') and new root-level 'entities'
+        if "ontology" in data:
+            ont = data["ontology"] or {}
+        else:
+            ont = data
 
     entities_def = ont.get("entities", {})
     if not entities_def:
@@ -110,7 +167,7 @@ __all__ = [
 
 if __name__ == "__main__":
 
-    ontology_path = "src/agent_poc/semantic_layer/ontology.yaml"
+    ontology_path = Path(__file__).with_name("ontology_data")
     print(f"Loading ontology from: {ontology_path}")
 
     entities, relations = load_ontology(ontology_path)

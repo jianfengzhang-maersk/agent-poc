@@ -1,0 +1,132 @@
+name: Container
+description: A physical shipping container with structural, ownership, and operational
+  attributes.
+synonyms:
+- container
+- cntr
+- unit
+attributes:
+  container_id:
+    type: string
+    primary_key: true
+    description: Container identifier, derived from equipment_number.
+  sequence_number:
+    type: integer
+    description: Internal sequence number associated with the equipment record.
+  is_active:
+    type: boolean
+    description: Whether the container is currently active in operations.
+  equipment_size:
+    type: string
+    description: Container size designation (e.g., 20GP, 40GP, 40HC).
+  equipment_type:
+    type: object
+    description: Container type classification hierarchy.
+    properties:
+      code:
+        type: string
+        description: Primary equipment type code.
+      parent_code_1:
+        type: string
+      parent_code_2:
+        type: string
+  ownership:
+    type: object
+    description: Ownership and leasing details for the container.
+    properties:
+      ownership_type_code:
+        type: string
+      ownership_type_name:
+        type: string
+      ownership_contract_number:
+        type: string
+      leasing_contract_number:
+        type: string
+      leasing_company_code:
+        type: string
+  lifecycle:
+    type: object
+    description: Manufacturing and lifecycle-related timestamps.
+    properties:
+      infleet_datetime:
+        type: datetime
+      infleet_location:
+        type: string
+      manufacturing_date:
+        type: datetime
+      refurbishment_date:
+        type: datetime
+  inspections:
+    type: object
+    description: CSC/PMI inspection details.
+    properties:
+      csc_inspection_date:
+        type: datetime
+      csc_inspection_location:
+        type: string
+      csc_inspection_next_date:
+        type: datetime
+      pmi_inspection_date:
+        type: datetime
+      pmi_inspection_location:
+        type: string
+      pmi_inspection_next_date:
+        type: datetime
+      inspector:
+        type: string
+      inspector_location:
+        type: string
+  modification:
+    type: object
+    description: Container modification or repair program information.
+    properties:
+      program:
+        type: string
+      status:
+        type: string
+  manufacturer_info:
+    type: object
+    description: Information about the container manufacturer and production.
+    properties:
+      manufacturer_code:
+        type: string
+      manufacturer_number:
+        type: string
+      production_serial_number:
+        type: string
+      construction_material_code:
+        type: string
+      equipment_profile_name:
+        type: string
+      equipment_profile_description:
+        type: string
+      equipment_profile_comment:
+        type: string
+  weight:
+    type: object
+    description: Container weight specifications.
+    properties:
+      tare_weight:
+        type: float
+      tare_weight_unit:
+        type: string
+      maximum_payload_weight:
+        type: float
+      maximum_payload_weight_unit:
+        type: string
+      maximum_gross_weight:
+        type: float
+  last_event_timestamp:
+    type: datetime
+    description: Last known operational event timestamp for the container.
+relationships:
+  belongs_to:
+    target: Shipment
+    description: A container belongs to a specific shipment or booking.
+  has_event:
+    target: ContainerEvent
+    description: A container has a sequence of logistic events during its lifecycle
+      such as gate-in, gate-out, load, discharge.
+  located_at:
+    target: Facility
+    description: A container may be located at a facility such as a terminal or depot.

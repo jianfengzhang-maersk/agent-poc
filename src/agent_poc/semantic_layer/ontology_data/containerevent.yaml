@@ -1,0 +1,65 @@
+name: ContainerEvent
+description: An operational container movement event such as gate-in, gate-out, load,
+  discharge, or customs inspection.
+synonyms:
+- event
+- container_event
+- movement_event
+attributes:
+  event_type:
+    type: string
+    description: The type of container movement event, derived from move_type (e.g.,
+      gate_in, gate_out, load, discharge).
+  event_time:
+    type: datetime
+    description: The timestamp when the event occurred, derived from activity_time.
+  container_id:
+    type: string
+    description: Container number, derived from equipment_number.
+  location_code:
+    type: string
+    description: Code representing where the event occurred, derived from event_location_code.
+  is_empty:
+    type: boolean
+    description: Whether the container was empty during the event.
+  transport_mode:
+    type: string
+    description: Transport mode associated with the event.
+  event_reason:
+    type: string
+    description: Additional classification of the event reason.
+  geo_position:
+    type: object
+    description: Latitude and longitude of the event location.
+    properties:
+      latitude:
+        type: float
+      longitude:
+        type: float
+  voyage_number:
+    type: string
+    description: Voyage number associated with this movement.
+  vessel_code:
+    type: string
+    description: Maersk vessel code associated with the event, derived from vessel_maersk_code.
+  shipment_number:
+    type: string
+    description: Shipment number associated with this event.
+  freight_order:
+    type: string
+    description: Freight order identifier associated with the event.
+  bl_number:
+    type: string
+    description: Bill of lading number related to this event.
+relationships:
+  occurs_at:
+    target: Facility
+    description: A container event occurs at a specific facility where the operation
+      takes place.
+  for_container:
+    target: Container
+    description: A container event is associated with one container, describing part
+      of its operational lifecycle.
+  part_of_shipment:
+    target: Shipment
+    description: 'Optional: events may be associated with a shipment or booking.'

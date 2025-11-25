@@ -68,13 +68,14 @@ if __name__ == "__main__":
         QueryUnderstanding,
         ontology_entities
     )
-    from agent_poc.semantic_layer.runtime import build_semantic_layer
+    from agent_poc.semantic_layer.engine import (
+        build_semantic_layer,
+        ONTOLOGY_SOURCE_PATH,
+    )
 
     DspyHelper.init_kimi()
 
-    sl = build_semantic_layer(
-        "src/agent_poc/semantic_layer/ontology.yaml",
-    )
+    sl = build_semantic_layer(ONTOLOGY_SOURCE_PATH)
     model_path = "src/agent_poc/modules/query_understanding/query_understanding_optimized_2.json"
     query_understanding = QueryUnderstanding(ontology_entities)
     query_understanding.load(model_path)

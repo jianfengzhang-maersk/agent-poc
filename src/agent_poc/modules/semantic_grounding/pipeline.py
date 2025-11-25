@@ -7,7 +7,7 @@ from typing import Dict, List, Sequence, Tuple
 from agent_poc.modules.semantic_grounding.graph_expansion import expand_graph
 from agent_poc.modules.semantic_grounding.relation_relevance import RelationRelevance
 from agent_poc.semantic_layer.ontology import RelationKey
-from agent_poc.semantic_layer.runtime import SemanticLayer
+from agent_poc.semantic_layer.engine import SemanticLayer
 
 
 def _collect_candidate_relations(
@@ -72,7 +72,7 @@ def run_semantic_grounding(
 if __name__ == "__main__":
     from agent_poc.utils.dspy_helper import DspyHelper
     from agent_poc.modules.query_understanding.query_understanding import QueryUnderstanding
-    from agent_poc.semantic_layer.runtime import semantic_layer, ontology_entities
+    from agent_poc.semantic_layer.engine import semantic_layer, ontology_entities
 
     DspyHelper.init_kimi()
 

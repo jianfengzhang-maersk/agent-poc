@@ -16,6 +16,7 @@ from agent_poc.semantic_layer.tools_registry import TOOLS_REGISTRY
 
 
 DEFAULT_TOOL_MODULES: Sequence[str] = ("agent_poc.semantic_layer.tools",)
+ONTOLOGY_SOURCE_PATH = Path(__file__).with_name("ontology_data")
 
 
 @dataclass
@@ -31,7 +32,7 @@ class ToolInfo:
 
 
 # -------------------------
-# Semantic Layer Runtime
+# Semantic Layer Engine
 # -------------------------
 
 
@@ -55,7 +56,7 @@ class SemanticLayer:
     def has_entity(self, name: str) -> bool:
         """Check if an entity exists in the ontology."""
         return name in self.entities
-    
+
     def find_entity_by_label(self, label: str) -> Optional[EntitySchema]:
         """
         Fuzzy-ish lookup: match against name or synonyms (case-insensitive).
@@ -170,9 +171,7 @@ def build_semantic_layer(
     )
 
 
-semantic_layer = build_semantic_layer(
-    "src/agent_poc/semantic_layer/ontology.yaml",
-)
+semantic_layer = build_semantic_layer(ONTOLOGY_SOURCE_PATH)
 
 # Build ontology entity descriptions list
 ontology_entities = [

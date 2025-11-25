@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from pyvis.network import Network
 
+from agent_poc.semantic_layer.engine import ONTOLOGY_SOURCE_PATH
 from agent_poc.semantic_layer.ontology import (
     EntitySchema,
     RelationSchema,
@@ -88,7 +89,7 @@ def render_pyvis_network(
 
 
 if __name__ == "__main__":
-    ontology_path = "src/agent_poc/semantic_layer/ontology.yaml"
+    ontology_path = ONTOLOGY_SOURCE_PATH
     nx_graph, _, _ = build_nx_graph(ontology_path)
 
     render_pyvis_network(

@@ -1,4 +1,55 @@
-from agent_poc.semantic_layer.tool_decorator import semantic_tool
+import inspect
+from typing import Optional, Tuple, get_type_hints
+
+from agent_poc.semantic_layer.tools_registry import TOOLS_REGISTRY
+
+
+def semantic_tool(
+    name: Optional[str] = None,
+    entity: Optional[str] = None,
+    relation: Optional[Tuple[str, str, str]] = None,
+    description: Optional[str] = None,
+):
+    """Decorator to register a semantic-layer tool."""
+
+    if entity and relation and entity != relation[0]:
+        raise ValueError(
+            f"entity='{entity}' does not match relation source='{relation[0]}'"
+        )
+
+    def wrapper(fn):
+        tool_name = name or fn.__name__
+
+        sig = inspect.signature(fn)
+        type_hints = get_type_hints(fn)
+
+        input_schema = []
+        for param_name, param in sig.parameters.items():
+            input_schema.append(
+                {
+                    "name": param_name,
+                    "type": str(type_hints.get(param_name, "Any")),
+                    "default": param.default
+                    if param.default != inspect._empty
+                    else None,
+                }
+            )
+
+        output_type = str(type_hints.get("return", "Any"))
+        final_desc = description or (inspect.getdoc(fn) or "")
+
+        TOOLS_REGISTRY[tool_name] = {
+            "fn": fn,
+            "input_schema": input_schema,
+            "output_type": output_type,
+            "entity": entity,
+            "relation": relation,
+            "description": final_desc,
+        }
+
+        return fn
+
+    return wrapper
 
 
 # -------------------------
@@ -94,6 +145,5 @@ def get_facility_details(facility_id: str) -> dict:
 
 
 if __name__ == "__main__":
-    from agent_poc.semantic_layer.tools_registry import TOOLS_REGISTRY
     for key, value in TOOLS_REGISTRY.items():
         print(key, value)
