@@ -137,8 +137,11 @@ if __name__ == "__main__":
     from agent_poc.modules.semantic_grounding.pipeline import run_semantic_grounding
     from agent_poc.modules.semantic_grounding.relation_filtering import RelationFiltering
     from agent_poc.semantic_layer.engine import semantic_layer, ontology_entities
+    import agent_poc.utils.mlflow_helper as mlfow_helper
+    
     import json
 
+    mlfow_helper.init()
     # Initialize DSPy
     DspyHelper.init_kimi()
     
