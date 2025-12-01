@@ -1,64 +1,58 @@
 examples:
   - query: "How many terminals are in Singapore?"
     entities:
-      - type: "City"
-        value: "Singapore"
-    intent: "facility_count"
+      - Facility
+      - City
+    intent: "count facilities in city"
 
   - query: "Where is container TEMU9876543 located?"
     entities:
-      - type: "Container"
-        value: "TEMU9876543"
-    intent: "container_tracking"
+      - Container
+    intent: "track container location"
 
   - query: "Show me shipment details for booking 987654321"
     entities:
-      - type: "Shipment"
-        value: "987654321"
-    intent: "shipment_details"
+      - Shipment
+    intent: "get shipment details"
 
   - query: "How many containers are linked to booking 111222333?"
     entities:
-      - type: "Shipment"
-        value: "111222333"
-    intent: "shipment_container_count"
+      - Shipment
+      - Container
+    intent: "count containers in shipment"
 
   - query: "What is the weight capacity of a 20 REEF container?"
     entities:
-      - type: "Container"
-        value: "20 REEF"
-    intent: "container_specification"
+      - Container
+    intent: "get container specifications"
 
   - query: "When will container ABCD1234567 arrive?"
     entities:
-      - type: "Container"
-        value: "ABCD1234567"
-      - type: "ContainerEvent"
-        value: "arrival"
-    intent: "container_eta"
+      - Container
+      - ContainerEvent
+    intent: "get container estimated arrival"
 
   - query: "How many containers were discharged at Hamburg port yesterday?"
     entities:
-      - type: "City"
-        value: "Hamburg"
-      - type: "ContainerEvent"
-        value: "discharged"
-    intent: "container_event_count"
+      - City
+      - Facility
+      - Container
+      - ContainerEvent
+    intent: "count container events at facility"
 
   - query: "List all terminals in Los Angeles"
     entities:
-      - type: "City"
-        value: "Los Angeles"
-    intent: "facility_list"
+      - Facility
+      - City
+    intent: "list facilities in city"
 
   - query: "Display containers for shipment 555666777 in table format"
     entities:
-      - type: "Shipment"
-        value: "555666777"
-    intent: "shipment_container_list"
+      - Shipment
+      - Container
+    intent: "list containers in shipment"
 
   - query: "What's the current position of container WXYZ9999999?"
     entities:
-      - type: "Container"
-        value: "WXYZ9999999"
-    intent: "container_tracking"
+      - Container
+    intent: "track container location"

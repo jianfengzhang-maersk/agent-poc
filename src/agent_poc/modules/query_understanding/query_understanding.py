@@ -8,7 +8,7 @@ from agent_poc.semantic_layer.engine import build_semantic_layer
 # ------------------------------------------------------------
 class QueryUnderstandingSignature(dspy.Signature):
     """
-    Step 1: Extract ontology entities + high-level intent.
+    Step 1: Extract related entities + high-level intent.
     """
 
     # ---- Inputs ----
@@ -19,16 +19,12 @@ class QueryUnderstandingSignature(dspy.Signature):
     )
 
     # ---- Outputs ----
-    entities: List[Dict[str, str]] = dspy.OutputField(
-        desc=(
-            "Entities explicitly mentioned in the query. "
-            "Each must have keys: 'type' (OntologyEntityType drawn from ontology_entities) "
-            "and 'value' (surface mention text)."
-        )
+    entities: List[str] = dspy.OutputField(
+        desc=("Related entities mentioned in the query. It must come from the ontology_entities.")
     )
 
     intent: str = dspy.OutputField(
-        desc="A short high-level intent label capturing the user's goal, less than 5 words."
+        desc="A short high-level intent label capturing the user's goal, less than 8 words."
     )
 
 
@@ -37,16 +33,15 @@ class QueryUnderstandingSignature(dspy.Signature):
 # ------------------------------------------------------------
 class QueryUnderstanding(dspy.Module):
 
-    def __init__(self, ontology_entities: List[str]):
+    def __init__(self):
         """Initialize module with a canonical ontology entity description list."""
         super().__init__()
-        self.ontology_entities = ontology_entities
-        self.predict = dspy.ChainOfThought(QueryUnderstandingSignature)
+        self.predict = dspy.Predict(QueryUnderstandingSignature)
 
     def forward(
         self,
         query: str,
-        ontology_entities: List[str] | None = None,
+        ontology_entities: List[str],
     ) -> QueryUnderstandingSignature:
         """Allow DSPy evaluators/optimizers to override ontology_entities per example."""
         return self.predict(query=query, ontology_entities=ontology_entities)
@@ -57,19 +52,21 @@ if __name__ == "__main__":
     from agent_poc.semantic_layer.engine import build_semantic_layer, ontology_entities
     from agent_poc.utils.dspy_helper import DspyHelper
     import agent_poc.utils.mlflow_helper as mlflow_helper
-    DspyHelper.init()
+
+    DspyHelper.init_kimi()
     mlflow_helper.init()
-    
+
     # Step 1 Module
-    step1 = QueryUnderstanding(ontology_entities)
+    qu = QueryUnderstanding()
 
     # Test query
     sample_query = (
-        "How many containers were gated out of Sydney terminal on 20 July 2025?"
+        # "How many containers were gated out of Sydney terminal on 20 July 2025?"
+        "Where is container TEMU9876543 located? "
     )
 
     # Run
-    res = step1(sample_query, ontology_entities)
+    res = qu(sample_query, ontology_entities)
 
     print("Entities:", res.entities)
     print("Intent:", res.intent)

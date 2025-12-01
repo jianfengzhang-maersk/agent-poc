@@ -1,140 +1,115 @@
 examples:
   - query: "How many terminals are there in Delhi?"
     entities:
-      - type: "City"
-        value: "Delhi"
-    intent: "facility_count"
+      - Facility
+      - City
+    intent: "count facilities in city"
 
   - query: "How many terminals are there in Shanghai? List their code in a single line."
     entities:
-      - type: "City"
-        value: "Shanghai"
-    intent: "facility_list"
+      - Facility
+      - City
+    intent: "list facilities in city"
 
   - query: "How many containers were gated out of Sydney terminal on 10July2025?"
     entities:
-      - type: "City"
-        value: "Sydney"
-      - type: "Facility"
-        value: "terminal"
-      - type: "ContainerEvent"
-        value: "gated out"
-    intent: "container_event_count"
+      - Container
+      - ContainerEvent
+      - City
+      - Facility
+    intent: "count container events at facility"
 
   - query: "Where is my container HASU1533926 on 20July2025?"
     entities:
-      - type: "Container"
-        value: "HASU1533926"
-    intent: "container_tracking"
+      - Container
+    intent: "track container location"
 
   - query: "What is the maximum weight load of a 40 DRY?"
     entities:
-      - type: "Container"
-        value: "40 DRY"
-    intent: "container_specification"
+      - Container
+    intent: "get container specifications"
 
   - query: "What is the total number of containers gated-in to Rotterdam last week?"
     entities:
-      - type: "City"
-        value: "Rotterdam"
-      - type: "ContainerEvent"
-        value: "gated-in"
-    intent: "container_event_count"
+      - Container
+      - ContainerEvent
+      - City
+    intent: "count container events in city"
 
   - query: "What is the height of container HASU1533926?"
     entities:
-      - type: "Container"
-        value: "HASU1533926"
+      - Container
     intent: "container_specification"
 
   - query: "Show me the details of shipment 256756918?"
     entities:
-      - type: "Shipment"
-        value: "256756918"
-    intent: "shipment_details"
+      - Shipment
+    intent: "get shipment details"
 
   - query: "How many units are linked to booking 250733952?"
     entities:
-      - type: "Shipment"
-        value: "250733952"
-    intent: "shipment_container_count"
+      - Shipment
+      - Container
+    intent: "count containers in shipment"
 
   - query: "Can you tell me how many container units are linked to shipment 256036146 please"
     entities:
-      - type: "Shipment"
-        value: "256036146"
+      - Shipment
+      - Container
     intent: "shipment_container_count"
 
   - query: "Where is my container HASU1533926"
     entities:
-      - type: "Container"
-        value: "HASU1533926"
+      - Container
     intent: "container_tracking"
 
   - query: "Can you tell me the current location of container HASU1533926?"
     entities:
-      - type: "Container"
-        value: "HASU1533926"
+      - Container
     intent: "container_tracking"
 
   - query: "What's the latest movement or location update for container HASU1533926?"
     entities:
-      - type: "Container"
-        value: "HASU1533926"
-      - type: "ContainerEvent"
-        value: "latest movement"
+      - Container
+      - ContainerEvent
     intent: "container_tracking"
 
   - query: "What is the arrival date for my container GAOU7345026?"
     entities:
-      - type: "Container"
-        value: "GAOU7345026"
-      - type: "ContainerEvent"
-        value: "arrival"
-    intent: "container_eta"
+      - Container
+      - ContainerEvent
+    intent: "get container estimated arrival"
 
   - query: "When can I expect my container GAOU7345026 to arrive?"
     entities:
-      - type: "Container"
-        value: "GAOU7345026"
-      - type: "ContainerEvent"
-        value: "arrival"
+      - Container
+      - ContainerEvent
     intent: "container_eta"
 
   - query: "What time will my container GAOU7345026 arrive?"
     entities:
-      - type: "Container"
-        value: "GAOU7345026"
-      - type: "ContainerEvent"
-        value: "arrival"
+      - Container
+      - ContainerEvent
     intent: "container_eta"
 
   - query: "show me the list of container linked to booking 250733952 in a tabular format"
     entities:
-      - type: "Shipment"
-        value: "250733952"
-    intent: "shipment_container_list"
+      - Shipment
+      - Container
+    intent: "list containers in shipment"
 
   - query: "How many containers were gated out of Sydney terminal today?"
     entities:
-      - type: "City"
-        value: "Sydney"
-      - type: "Facility"
-        value: "terminal"
-      - type: "ContainerEvent"
-        value: "gated out"
-    intent: "container_event_count"
+      - City
+      - Facility
+      - Container
+      - ContainerEvent
+    intent: "count container events at facility"
 
   - query: "What is the number of containers gated-in now in Rotterdam?"
     entities:
-      - type: "City"
-        value: "Rotterdam"
-      - type: "ContainerEvent"
-        value: "gated-in"
-    intent: "container_event_count"
+      - City
+      - Container
+      - ContainerEvent
+    intent: "count container events in city"
 
-  - query: "How many terminals are there in Rotterdam? List their code in a single line."
-    entities:
-      - type: "City"
-        value: "Rotterdam"
-    intent: "facility_list"

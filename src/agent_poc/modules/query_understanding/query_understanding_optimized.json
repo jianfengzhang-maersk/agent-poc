@@ -1,0 +1,158 @@
+{
+  "predict": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "query": "Where is my container HASU1533926 on 20July2025?",
+        "ontology_entities": [
+          [
+            "City",
+            "A geographical city where logistics operations such as container movements, terminals, and facilities exist."
+          ],
+          [
+            "Container",
+            "A physical shipping container with structural, ownership, and operational attributes."
+          ],
+          [
+            "ContainerEvent",
+            "An operational container movement event such as gate-in, gate-out, load, discharge, or customs inspection."
+          ],
+          [
+            "Facility",
+            "A physical location used for container operations such as terminals."
+          ],
+          [
+            "Shipment",
+            "A shipment or booking representing the transport of one or more containers."
+          ]
+        ],
+        "entities": [
+          "Container"
+        ],
+        "intent": "track container location"
+      },
+      {
+        "query": "How many terminals are there in Shanghai? List their code in a single line.",
+        "ontology_entities": [
+          [
+            "City",
+            "A geographical city where logistics operations such as container movements, terminals, and facilities exist."
+          ],
+          [
+            "Container",
+            "A physical shipping container with structural, ownership, and operational attributes."
+          ],
+          [
+            "ContainerEvent",
+            "An operational container movement event such as gate-in, gate-out, load, discharge, or customs inspection."
+          ],
+          [
+            "Facility",
+            "A physical location used for container operations such as terminals."
+          ],
+          [
+            "Shipment",
+            "A shipment or booking representing the transport of one or more containers."
+          ]
+        ],
+        "entities": [
+          "Facility",
+          "City"
+        ],
+        "intent": "list facilities in city"
+      },
+      {
+        "query": "How many terminals are there in Delhi?",
+        "ontology_entities": [
+          [
+            "City",
+            "A geographical city where logistics operations such as container movements, terminals, and facilities exist."
+          ],
+          [
+            "Container",
+            "A physical shipping container with structural, ownership, and operational attributes."
+          ],
+          [
+            "ContainerEvent",
+            "An operational container movement event such as gate-in, gate-out, load, discharge, or customs inspection."
+          ],
+          [
+            "Facility",
+            "A physical location used for container operations such as terminals."
+          ],
+          [
+            "Shipment",
+            "A shipment or booking representing the transport of one or more containers."
+          ]
+        ],
+        "entities": [
+          "Facility",
+          "City"
+        ],
+        "intent": "count facilities in city"
+      },
+      {
+        "query": "How many containers were gated out of Sydney terminal on 10July2025?",
+        "ontology_entities": [
+          [
+            "City",
+            "A geographical city where logistics operations such as container movements, terminals, and facilities exist."
+          ],
+          [
+            "Container",
+            "A physical shipping container with structural, ownership, and operational attributes."
+          ],
+          [
+            "ContainerEvent",
+            "An operational container movement event such as gate-in, gate-out, load, discharge, or customs inspection."
+          ],
+          [
+            "Facility",
+            "A physical location used for container operations such as terminals."
+          ],
+          [
+            "Shipment",
+            "A shipment or booking representing the transport of one or more containers."
+          ]
+        ],
+        "entities": [
+          "Container",
+          "ContainerEvent",
+          "City",
+          "Facility"
+        ],
+        "intent": "count container events at facility"
+      }
+    ],
+    "signature": {
+      "instructions": "Given a logistics question and a list of ontology entities (each with a short description), identify exactly which entities from that list are needed to answer the question (ignore anything that isn’t required), then write a ≤8-word intent label that captures the user’s overall goal. Use only entities explicitly mentioned or logically implied; include the date if the question references one. Return the chosen entity names and the intent label.",
+      "fields": [
+        {
+          "prefix": "Query:",
+          "description": "User's natural language query."
+        },
+        {
+          "prefix": "Ontology Entities:",
+          "description": "A list of ontology entity tuples in the form (EntityName, Description)."
+        },
+        {
+          "prefix": "Entities:",
+          "description": "Related entities mentioned in the query. It must come from the ontology_entities."
+        },
+        {
+          "prefix": "Intent:",
+          "description": "A short high-level intent label capturing the user's goal, less than 8 words."
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.0.4",
+      "cloudpickle": "3.1"
+    }
+  }
+}

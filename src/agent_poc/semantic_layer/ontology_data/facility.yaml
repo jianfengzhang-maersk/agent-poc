@@ -8,6 +8,10 @@ attributes:
     type: string
     primary_key: true
     description: Unique identifier of the facility, derived from facilityIdentifier.
+  facility_type:
+    type: string
+    primary_key: true
+    description: "Operation | Customer. Two main facility types: operational facilities (e.g., terminals, warehouses) and customer facilities (e.g., customer locations)."  
   facility_name:
     type: string
     description: Human-readable name of the facility.

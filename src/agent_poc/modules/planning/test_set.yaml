@@ -1,0 +1,84 @@
+examples:
+  - query: "How many terminals are in Singapore?"
+    entities:
+      - Facility
+      - City
+    todo_list:
+      - Filter operational facilities to those located in the city of Singapore.
+      - Identify facilities that are classified as terminals based on their facility type name.
+      - Count the distinct number of these terminal facilities to get the total number of terminals in Singapore.
+
+  - query: "Where is container TEMU9876543 located?"
+    entities:
+      - Container
+    todo_list:
+      - Filter container events for container number TEMU9876543.
+      - Retrieve the latest event to find the most recent known location.
+      - Get the facility id of the event location.
+      - Find the facility name, city and country corresponding to that facility id from operational facilities.
+
+  - query: "Show me shipment details for booking 987654321"
+    entities:
+      - Shipment
+    todo_list:
+      - Retrieve the shipment details for booking number 987654321.
+      - Display all relevant shipment information including booking details, dates, and status.
+
+  - query: "How many containers are linked to booking 111222333?"
+    entities:
+      - Shipment
+      - Container
+    todo_list:
+      - Retrieve all containers linked to booking number 111222333.
+      - Count the total number of these containers.
+
+  - query: "What is the weight capacity of a 20 REEF container?"
+    entities:
+      - Container
+    todo_list:
+      - Filter containers by size type 20 and equipment type REEF.
+      - Retrieve the weight capacity specification for this container type.
+
+  - query: "When will container ABCD1234567 arrive?"
+    entities:
+      - Container
+      - ContainerEvent
+    todo_list:
+      - Retrieve the latest activity time for the container ABCD1234567.
+      - Filter for relevant move types indicating arrival activities.
+      - Join with facility information to get the estimated arrival time and location details.
+
+  - query: "How many containers were discharged at Hamburg port yesterday?"
+    entities:
+      - City
+      - Facility
+      - Container
+      - ContainerEvent
+    todo_list:
+      - Filter operational facilities terminals to those located in the city of Hamburg.
+      - Count container events to those with move type 'DISCHARGE', date of yesterday and the terminals in Hamburg (result from step 1).
+
+  - query: "List all terminals in Los Angeles"
+    entities:
+      - Facility
+      - City
+    todo_list:
+      - Filter operational facilities to those located in the city of Los Angeles.
+      - Identify facilities that are classified as terminals based on their facility type name.
+      - List the facility codes and names of these terminal facilities.
+
+  - query: "Display containers for shipment 555666777 in table format"
+    entities:
+      - Shipment
+      - Container
+    todo_list:
+      - Retrieve all containers linked to booking number 555666777.
+
+  - query: "What's the current position of container WXYZ9999999?"
+    entities:
+      - Container
+    todo_list:
+      - Filter container events for container number WXYZ9999999.
+      - Retrieve the latest event to find the most recent known location.
+      - Get the facility id of the event location.
+      - Find the facility name, city and country corresponding to that facility id from operational facilities.

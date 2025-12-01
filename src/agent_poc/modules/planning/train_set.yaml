@@ -1,0 +1,88 @@
+examples:
+  - query: "How many terminals are there in Delhi?"
+    entities:
+      - Facility
+      - City
+    todo_list:
+      - Filter operational facilities to those located in the city of Delhi.
+      - Identify facilities that are classified as terminals based on their facility type name.
+      - Count the distinct number of these terminal facilities to get the total number of terminals in Delhi.
+
+  - query: "How many terminals are there in Shanghai? List their code in a single line."
+    entities:
+      - Facility
+      - City
+    todo_list:
+      - Filter operational facilities to those located in the city of Shanghai.
+      - Identify facilities that are classified as terminals based on their facility type name.
+      - Count the distinct number of these terminal facility identifiers (codes) of these terminals.
+
+  - query: "How many containers were gated out of Sydney terminal on 10July2025?"
+    entities:
+      - Container
+      - ContainerEvnet
+      - City
+      - Facility
+    todo_list:
+      - Filter operational facilities terminals to those located in the city of Sydney
+      - Count container events to those with move type 'GATE-OUT', date of 2025-07-10 and the terminals in Sydney (result from step 1)
+
+  - query: "Where is my container HASU1533926 on 20July2025?"
+    entities:
+      - Container
+    todo_list:
+      - Filter container events for container number HASU1533926 and date 2025-07-20.
+      - Retrieve the latest event before or on that date to find the most recent known location.
+      - Get the facility id of the event location.
+      - Find the facility name, city and country corresponding to that facility id from operational facilities.
+
+  - query: "What is the total number of containers gated-in to Rotterdam last week?"
+    entities:
+      - Container
+      - ContainerEvent
+      - City
+    todo_list:
+      - Retrieval all the terminals in Rotterdam
+      - Count all the container events by GATED-IN event, last week and Rotterdam terminals extracted in step 1
+
+
+  - query: "What is the height of container HASU1533926?"
+    entities:
+      - Container
+    todo_list:: 
+      - Retrieve the height of the specified container.
+
+
+  - query: "How many units are linked to booking 250733952?"
+    entities:
+      - Shipment
+      - Container
+    todo_list:
+      - Retrieve all containers linked to booking number 250733952.
+      - Count the total number of these containers.
+
+  - query: "What time will my container GAOU7345026 arrive?"
+    entities:
+      - Container
+      - ContainerEvent
+    todo_list:
+      - Retrieve the latest activity time for the container GAOU7345026.
+      - Filter for relevant move types indicating arrival activities.
+      - Join with facility information to get the location details.
+
+  - query: "show me the list of container linked to booking 259043578 in a tabular format"
+    entities:
+      - Shipment
+      - Container
+    todo_list:
+      - Retrieve all containers linked to booking number 259043578.
+
+  - query: "What is the number of containers gated-in now in Rotterdam?"
+    entities:
+      - City
+      - Container
+      - ContainerEvent
+    todo_list:
+      - Filter operational facilities terminals to those located in the city of Rotterdam
+      - Count container events to those with move type 'GATE-OUT', date of today and the terminals in Sydney (result from step 1)
+

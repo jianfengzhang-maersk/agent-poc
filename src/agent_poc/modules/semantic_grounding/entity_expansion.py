@@ -6,19 +6,15 @@ from agent_poc.semantic_layer.ontology import RelationKey
 
 
 def expand_entities(
-    step1_entities: List[dict],
-    relevant_relations: Dict[RelationKey, str],
-) -> Tuple[List[str], List[RelationKey]]:
+    step1_entities: List[str]
+) -> List[str]:
     """
     Step 2.3: Deterministic entity expansion.
 
     Input:
-      - step1_entities: [{"type": "City", "value": "Sydney"}, ...]
-            - relevant_relations: {RelationKey: "yes" or "no"}
-
+      - step1_entities: ["City", ...]
     Output:
-            - expanded_entity_types: list of entity type strings
-            - final_relations: list of RelationKey tuples that are relevant=yes
+      - expanded_entity_types: list of entity type strings
     """
 
     # 1. collect initial entity types
