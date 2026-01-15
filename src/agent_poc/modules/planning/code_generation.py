@@ -1,3 +1,5 @@
+import ast
+import re
 from typing import Any, Dict, List
 
 import dspy
@@ -11,7 +13,7 @@ class PythonCodeGenSignature(dspy.Signature):
     ============================
     STRICT OUTPUT RULES
     ============================
-    1. MUST output ONLY valid Python code.  
+    1. MUST output ONLY valid Python code.
        - No comments.
        - No markdown.
        - No explanation.
@@ -90,11 +92,6 @@ class PythonCodeGenSignature(dspy.Signature):
         desc="Executable Python code implementing a function run()"
     )
 
-
-
-import ast
-import re
-from typing import Any, Dict, List
 
 class PythonCodeGen(dspy.Module):
     """
@@ -180,14 +177,12 @@ class PythonCodeGen(dspy.Module):
             raise ValueError(f"Generated code is not valid Python: {e}") from e
 
 
-
 if __name__ == "__main__":
     # ---- Step 1: planner output ----
     from agent_poc.utils.dspy_helper import DspyHelper
-    
+
     DspyHelper.init_kimi()
-    
-    
+
     plan_steps = [
         {
             "id": 1,
@@ -202,7 +197,7 @@ if __name__ == "__main__":
                 "facility_id": "terminals[*].facility_id",
                 "start_date": "2025-07-20",
                 "end_date": "2025-07-20",
-                "event_type": "gate_out"
+                "event_type": "gate_out",
             },
             "output": "events",
         },
@@ -227,7 +222,7 @@ if __name__ == "__main__":
                 {"name": "event_type", "type": "string"},
             ],
             "output_type": "List[ContainerEvent]",
-        }
+        },
     }
 
     model_schemas = {}  # not needed

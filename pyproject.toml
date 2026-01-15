@@ -16,10 +16,16 @@ dependencies = [
     "networkx>=3.5",
     "openinference-instrumentation-dspy>=0.1.30",
     "pyvis>=0.3.2",
+    "ruff>=0.14.11",
 ]
 
 [project.scripts]
 agent-poc = "agent_poc:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.8.19,<0.9.0"]

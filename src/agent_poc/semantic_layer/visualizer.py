@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, Tuple
 
-import matplotlib.pyplot as plt
 import networkx as nx
 from pyvis.network import Network
 
@@ -48,7 +47,6 @@ def build_nx_graph(ontology_path: str | Path) -> GraphBuild:
         )
 
     return graph, entities, relations
-
 
 
 def render_pyvis_network(

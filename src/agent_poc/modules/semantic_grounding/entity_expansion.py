@@ -1,18 +1,19 @@
 # semantic_grounding/entity_expansion.py
 
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set
 
 from agent_poc.semantic_layer.ontology import RelationKey
 
 
 def expand_entities(
-    step1_entities: List[str]
+    step1_entities: List[str], relevant_relations: Dict[RelationKey, str]
 ) -> List[str]:
     """
     Step 2.3: Deterministic entity expansion.
 
     Input:
       - step1_entities: ["City", ...]
+      - relevant_relations: dict mapping RelationKey to "yes"/"no"
     Output:
       - expanded_entity_types: list of entity type strings
     """

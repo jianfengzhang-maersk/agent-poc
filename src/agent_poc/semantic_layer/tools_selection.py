@@ -1,7 +1,6 @@
 # semantic_layer/tool_selection.py
 
-from typing import Dict, List
-from agent_poc.semantic_layer.tools_registry import TOOLS_REGISTRY
+from typing import List
 from agent_poc.semantic_layer.ontology import RelationKey
 
 from agent_poc.semantic_layer.engine import semantic_layer
@@ -35,8 +34,7 @@ def select_tools(
 
 
 if __name__ == "__main__":
-
-    from agent_poc.semantic_layer.engine import semantic_layer, ontology_entities
+    from agent_poc.semantic_layer.engine import semantic_layer
 
     question = "How many containers were gated out of Sydney terminal on 20 July 2025?"
     print("Question:", question)

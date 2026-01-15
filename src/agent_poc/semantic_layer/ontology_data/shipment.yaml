@@ -143,6 +143,7 @@ attributes:
           type: string
         vas_description:
           type: string
+          
 relationships:
   has_container:
     target: Container

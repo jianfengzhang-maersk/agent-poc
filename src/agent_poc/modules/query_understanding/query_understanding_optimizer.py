@@ -1,16 +1,14 @@
-from dspy import MIPROv2, Example
 import dspy
 import yaml
 from pathlib import Path
+
+from dspy import MIPROv2, Example
+
 from agent_poc.modules.query_understanding.query_understanding import QueryUnderstanding
-
-
-from agent_poc.semantic_layer.engine import build_semantic_layer
 from agent_poc.utils.dspy_helper import DspyHelper
+from agent_poc.semantic_layer.engine import ontology_entities
 
 DspyHelper.init_kimi()
-
-from agent_poc.semantic_layer.engine import build_semantic_layer, ontology_entities
 
 # 1. Build the Step 1 module
 step1 = QueryUnderstanding()
@@ -76,7 +74,7 @@ def query_understanding_metric(example, pred, trace=None):
         # Clamp score between 0 and 1
         intent_score = max(0.0, min(1.0, intent_score))
         score += 0.5 * intent_score
-    except Exception as e:
+    except Exception:
         # Fallback to exact match if LLM judge fails
         if pred.intent == example.intent:
             score += 0.5
@@ -101,8 +99,6 @@ def query_understanding_metric(example, pred, trace=None):
 
 
 # 4. Define training and evaluation functions
-from dspy.teleprompt import BootstrapFewShot
-from pathlib import Path
 
 # Path to save/load the optimized module
 OPTIMIZED_MODEL_PATH = (
@@ -123,9 +119,9 @@ def evaluate_model(model, testset, metric_fn, title="Evaluating Model"):
     Returns:
         dict: Evaluation results including average score and individual scores
     """
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"### {title} ###")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     total_score = 0.0
     scores = []
@@ -142,9 +138,9 @@ def evaluate_model(model, testset, metric_fn, title="Evaluating Model"):
         print(f"Expected entities: {example.entities} | Predicted: {result.entities}")
 
     avg_score = total_score / len(testset) if testset else 0
-    print(f"\n{'='*80}")
-    print(f"Average Score: {avg_score:.2f} ({avg_score*100:.1f}%)")
-    print(f"{'='*80}\n")
+    print(f"\n{'=' * 80}")
+    print(f"Average Score: {avg_score:.2f} ({avg_score * 100:.1f}%)")
+    print(f"{'=' * 80}\n")
 
     return {
         "average_score": avg_score,
@@ -206,7 +202,6 @@ def show_model_info(model):
 
 
 if __name__ == "__main__":
-
     # 5. Main execution flow
     print("\n" + "=" * 80)
     print("### Query Understanding Optimization Pipeline ###")
@@ -257,10 +252,10 @@ if __name__ == "__main__":
         print("### Optimization Results Summary ###")
         print("=" * 80)
         print(
-            f"Baseline Score:  {baseline_results['average_score']:.2f} ({baseline_results['average_score']*100:.1f}%)"
+            f"Baseline Score:  {baseline_results['average_score']:.2f} ({baseline_results['average_score'] * 100:.1f}%)"
         )
         print(
-            f"Optimized Score: {optimized_results['average_score']:.2f} ({optimized_results['average_score']*100:.1f}%)"
+            f"Optimized Score: {optimized_results['average_score']:.2f} ({optimized_results['average_score'] * 100:.1f}%)"
         )
         improvement = (
             optimized_results["average_score"] - baseline_results["average_score"]

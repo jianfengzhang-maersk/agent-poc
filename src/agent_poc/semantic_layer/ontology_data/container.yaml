@@ -119,6 +119,7 @@ attributes:
   last_event_timestamp:
     type: datetime
     description: Last known operational event timestamp for the container.
+    
 relationships:
   belongs_to:
     target: Shipment

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from agent_poc.modules.semantic_grounding.entity_expansion import expand_entities
 from agent_poc.modules.semantic_grounding.relation_discovery import discover_relations

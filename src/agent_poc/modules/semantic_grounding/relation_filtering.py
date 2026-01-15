@@ -40,7 +40,6 @@ class RelationFiltering(dspy.Module):
         intent: str,
         relations: List[Tuple[str, str, str, str]],
     ) -> Dict[RelationKey, str]:
-
         merged: Dict[RelationKey, str] = {}
 
         # batch evaluation

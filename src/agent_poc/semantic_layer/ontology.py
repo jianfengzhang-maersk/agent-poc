@@ -7,7 +7,9 @@ from typing import Any, Dict, List, Tuple
 import yaml
 
 
-def _extract_entities_from_payload(payload: Dict[str, Any], source: str) -> Dict[str, Any]:
+def _extract_entities_from_payload(
+    payload: Dict[str, Any], source: str
+) -> Dict[str, Any]:
     """Normalize various ontology payload shapes into an entity dictionary."""
 
     if not payload:
@@ -26,12 +28,14 @@ def _extract_entities_from_payload(payload: Dict[str, Any], source: str) -> Dict
     if "name" in data:
         entity_name = data["name"]
         if not entity_name:
-            raise ValueError(f"Entity definition in {source} must include a non-empty name")
+            raise ValueError(
+                f"Entity definition in {source} must include a non-empty name"
+            )
         cfg = {k: v for k, v in data.items() if k != "name"}
         return {entity_name: cfg}
 
     if len(data) == 1:
-        (entity_name, cfg), = data.items()
+        ((entity_name, cfg),) = data.items()
         if isinstance(entity_name, str) and isinstance(cfg, dict):
             return {entity_name: cfg}
 
@@ -71,17 +75,25 @@ class RelationSchema:
         return (self.from_entity, self.name, self.to_entity)
 
 
-def load_ontology(path: str | Path) -> Tuple[Dict[str, EntitySchema], Dict[RelationKey, RelationSchema]]:
+def load_ontology(
+    path: str | Path,
+) -> Tuple[Dict[str, EntitySchema], Dict[RelationKey, RelationSchema]]:
     path = Path(path)
 
     if path.is_dir():
         entities_payload: Dict[str, Any] = {}
         yaml_files = sorted(
-            [p for p in path.iterdir() if p.is_file() and p.suffix.lower() in {".yaml", ".yml"}]
+            [
+                p
+                for p in path.iterdir()
+                if p.is_file() and p.suffix.lower() in {".yaml", ".yml"}
+            ]
         )
 
         if not yaml_files:
-            raise ValueError(f"ontology directory '{path}' does not contain any YAML files")
+            raise ValueError(
+                f"ontology directory '{path}' does not contain any YAML files"
+            )
 
         for yaml_path in yaml_files:
             raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8")) or {}
@@ -166,7 +178,6 @@ __all__ = [
 
 
 if __name__ == "__main__":
-
     ontology_path = Path(__file__).with_name("ontology_data")
     print(f"Loading ontology from: {ontology_path}")
 

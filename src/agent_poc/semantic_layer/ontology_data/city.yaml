@@ -12,6 +12,7 @@ attributes:
   country_name:
     type: string
     description: Country name of the facility.
+    
 relationships:
   has_facility:
     target: Facility

@@ -71,7 +71,6 @@ class SemanticTodoPlanner(dspy.Module):
 
 
 if __name__ == "__main__":
-
     from agent_poc.utils.dspy_helper import DspyHelper
 
     DspyHelper.init_kimi()
@@ -94,7 +93,6 @@ if __name__ == "__main__":
         query=query,
         entities=entities,
         relationships=relationships,
-        
     )
 
     print("TODO MAP:")

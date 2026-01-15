@@ -32,73 +32,82 @@ attributes:
         type: float
       longitude:
         type: float
-  facility_types:
-    type: array
-    description: List of facility type classifications (e.g., terminal, warehouse,
-      depot, customer location).
-    items:
-      type: object
-      properties:
-        type_code:
-          type: string
-        type_name:
-          type: string
-  defined_areas:
-    type: array
-    description: Sub-areas within the facility, such as gates, yards, berths.
-    items:
-      type: object
-      properties:
-        area_name:
-          type: string
-        area_type_code:
-          type: string
-        location_type:
-          type: string
-  facility_availabilities:
-    type: array
-    description: Operating time windows when the facility is available.
-    items:
-      type: object
-      properties:
-        start_time:
-          type: string
-        end_time:
-          type: string
-        availability_type:
-          type: string
-        weekdays:
-          type: object
-          description: 'Key: weekday, Value: open/close indicator'
-          additionalProperties: true
-  facility_offerings:
-    type: array
-    description: Services the facility provides (e.g., lift-on, storage, reefer plug).
-    items:
-      type: object
-      properties:
-        offering_code:
-          type: string
-        offering_name:
-          type: string
-        offering_description:
-          type: string
-        valid_to:
-          type: datetime
-        is_primary:
-          type: boolean
-  iata_code:
-    type: string
-    description: IATA airport code (if applicable).
-  geoid:
-    type: string
-    description: Geographical ID for location matching.
-  hsud_code:
-    type: string
-    description: HSUD code used in operational systems.
-  smdg:
-    type: string
-    description: SMDG terminal code (if applicable).
+subtype_attributes:
+  operational:
+    facility_types:
+      type: array
+      description: List of facility type classifications (e.g., terminal, warehouse,
+        depot, customer location).
+      items:
+        type: object
+        properties:
+          type_code:
+            type: string
+          type_name:
+            type: string
+    defined_areas:
+      type: array
+      description: Sub-areas within the facility, such as gates, yards, berths.
+      items:
+        type: object
+        properties:
+          area_name:
+            type: string
+          area_type_code:
+            type: string
+          location_type:
+            type: string
+    facility_availabilities:
+      type: array
+      description: Operating time windows when the facility is available.
+      items:
+        type: object
+        properties:
+          start_time:
+            type: string
+          end_time:
+            type: string
+          availability_type:
+            type: string
+          weekdays:
+            type: object
+            description: 'Key: weekday, Value: open/close indicator'
+            additionalProperties: true
+    facility_offerings:
+      type: array
+      description: Services the facility provides (e.g., lift-on, storage, reefer plug).
+      items:
+        type: object
+        properties:
+          offering_code:
+            type: string
+          offering_name:
+            type: string
+          offering_description:
+            type: string
+          valid_to:
+            type: datetime
+          is_primary:
+            type: boolean
+    iata_code:
+      type: string
+      description: IATA airport code (if applicable).
+    geoid:
+      type: string
+      description: Geographical ID for location matching.
+    hsud_code:
+      type: string
+      description: HSUD code used in operational systems.
+    smdg:
+      type: string
+      description: SMDG terminal code (if applicable).
+      
+  customer:
+    url:
+      type: string
+      description: URL of the customer facility.
+
+
 relationships:
   located_in:
     target: City

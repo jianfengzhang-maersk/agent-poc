@@ -59,9 +59,7 @@ def semantic_tool(
 # -------------------------
 # 1. City.has_facility → get terminals
 # -------------------------
-@semantic_tool(
-    relation=("City", "has_facility", "Facility")
-)
+@semantic_tool(relation=("City", "has_facility", "Facility"))
 def get_terminals_by_city(city_name: str) -> list[dict]:
     """Retrieve all facilities of type 'terminal' that belong to a given city."""
     pass
@@ -70,14 +68,9 @@ def get_terminals_by_city(city_name: str) -> list[dict]:
 # -------------------------
 # 2. Facility.hosts_event → get events by facility
 # -------------------------
-@semantic_tool(
-    relation=("Facility", "hosts_event", "ContainerEvent")
-)
+@semantic_tool(relation=("Facility", "hosts_event", "ContainerEvent"))
 def get_events_by_facility(
-    facility_id: str,
-    start_date: str,
-    end_date: str,
-    event_type: str
+    facility_id: str, start_date: str, end_date: str, event_type: str
 ) -> List[Containerevent]:
     """Query container events that occurred at a specific facility."""
     pass
@@ -86,14 +79,9 @@ def get_events_by_facility(
 # -------------------------
 # 3. Container.has_event → get events by container
 # -------------------------
-@semantic_tool(
-    relation=("Container", "has_event", "ContainerEvent")
-)
+@semantic_tool(relation=("Container", "has_event", "ContainerEvent"))
 def get_events_by_container(
-    container_id: str,
-    start_date: str,
-    end_date: str,
-    event_type: str
+    container_id: str, start_date: str, end_date: str, event_type: str
 ) -> List[Containerevent]:
     """Query container movement events for a specific container."""
     pass
@@ -102,9 +90,7 @@ def get_events_by_container(
 # -------------------------
 # 4. Container.belongs_to → get shipment by container
 # -------------------------
-@semantic_tool(
-    relation=("Container", "belongs_to", "Shipment")
-)
+@semantic_tool(relation=("Container", "belongs_to", "Shipment"))
 def get_shipment_by_container(container_id: str) -> Shipment:
     """Retrieve the shipment that a given container belongs to."""
     pass
@@ -113,9 +99,7 @@ def get_shipment_by_container(container_id: str) -> Shipment:
 # -------------------------
 # 5. Shipment.has_container → get containers by shipment
 # -------------------------
-@semantic_tool(
-    relation=("Shipment", "has_container", "Container")
-)
+@semantic_tool(relation=("Shipment", "has_container", "Container"))
 def get_containers_by_shipment(shipment_id: str) -> List[Container]:
     """Retrieve all containers belonging to a specific shipment."""
     pass

@@ -180,7 +180,6 @@ ontology_entities = [
 
 
 if __name__ == "__main__":
-
     # 1) Find entity
     city = semantic_layer.get_entity("City")
     print(city)

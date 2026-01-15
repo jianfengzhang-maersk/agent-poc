@@ -1,6 +1,5 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 import dspy
-from agent_poc.semantic_layer.engine import build_semantic_layer
 
 
 # ------------------------------------------------------------
@@ -20,7 +19,9 @@ class QueryUnderstandingSignature(dspy.Signature):
 
     # ---- Outputs ----
     entities: List[str] = dspy.OutputField(
-        desc=("Related entities mentioned in the query. It must come from the ontology_entities.")
+        desc=(
+            "Related entities mentioned in the query. It must come from the ontology_entities."
+        )
     )
 
     intent: str = dspy.OutputField(
@@ -32,7 +33,6 @@ class QueryUnderstandingSignature(dspy.Signature):
 # Step 1 DSPy Module
 # ------------------------------------------------------------
 class QueryUnderstanding(dspy.Module):
-
     def __init__(self):
         """Initialize module with a canonical ontology entity description list."""
         super().__init__()
@@ -48,8 +48,7 @@ class QueryUnderstanding(dspy.Module):
 
 
 if __name__ == "__main__":
-
-    from agent_poc.semantic_layer.engine import build_semantic_layer, ontology_entities
+    from agent_poc.semantic_layer.engine import ontology_entities
     from agent_poc.utils.dspy_helper import DspyHelper
     import agent_poc.utils.mlflow_helper as mlflow_helper
 

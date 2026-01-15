@@ -1,22 +1,21 @@
 from typing import List, Sequence, Tuple
 
-from agent_poc.semantic_layer.engine import SemanticLayer
 from agent_poc.semantic_layer.ontology import RelationKey
 from agent_poc.semantic_layer.engine import semantic_layer
 
 
 def discover_relations(
-    seed_entities: Sequence[dict]
+    seed_entities: Sequence[dict],
 ) -> List[Tuple[str, str, str, str]]:
     """Discover unique ontology relations touching the provided entity types.
-    
+
     Args:
         seed_entities: List of entity dicts with 'type' field
         semantic_layer: Optional SemanticLayer instance. If None, uses the global default.
-    
+
     Returns:
         List of tuples (from_entity, relation_name, to_entity, description)
-    """    
+    """
     seen: set[RelationKey] = set()
     candidates: List[Tuple[str, str, str, str]] = []
 

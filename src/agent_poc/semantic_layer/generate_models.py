@@ -1,11 +1,10 @@
 import yaml
 import re
 from pathlib import Path
-from typing import Dict, Any, List
 
 
 def pascal_case(name: str) -> str:
-    return ''.join(word.capitalize() for word in re.split(r'[_\-\s]+', name))
+    return "".join(word.capitalize() for word in re.split(r"[_\-\s]+", name))
 
 
 def python_primitive(yaml_type: str) -> str:
@@ -14,7 +13,7 @@ def python_primitive(yaml_type: str) -> str:
         "integer": "int",
         "float": "float",
         "boolean": "bool",
-        "datetime": "datetime.datetime"
+        "datetime": "datetime.datetime",
     }
     return mapping.get(yaml_type, "Any")
 
@@ -46,7 +45,9 @@ class {class_name}(Enum):
     # --------------------------
     def generate_struct(self, class_name: str, spec: dict, item_mode=False) -> str:
         description = spec.get("description") or (
-            f"Struct type for {class_name}" if not item_mode else f"Item struct for {class_name}"
+            f"Struct type for {class_name}"
+            if not item_mode
+            else f"Item struct for {class_name}"
         )
 
         properties = spec.get("properties", {})
@@ -101,15 +102,11 @@ class {class_name}(BaseModel):
 
         for attr, spec in attributes.items():
             if spec.get("type") == "enum":
-                nested_enums.append(
-                    self.generate_enum(attr + "_enum", spec)
-                )
+                nested_enums.append(self.generate_enum(attr + "_enum", spec))
 
             if spec.get("type") == "object" and "properties" in spec:
                 struct_name = pascal_case(attr) + "Struct"
-                nested_structs.append(
-                    self.generate_struct(struct_name, spec)
-                )
+                nested_structs.append(self.generate_struct(struct_name, spec))
 
             if spec.get("type") == "array":
                 item = spec.get("items")
@@ -169,7 +166,7 @@ from typing import Optional, List, Dict, Any
         for yaml_file in src_dir.glob("*.yaml"):
             raw = yaml.safe_load(open(yaml_file))
             entity_def = raw
-            entity_name = entity_def['name']
+            entity_name = entity_def["name"]
             code = self.generate_entity_model(entity_name, entity_def)
             out_file = out_dir / f"{entity_name.lower()}.py"
             out_file.write_text(code)
