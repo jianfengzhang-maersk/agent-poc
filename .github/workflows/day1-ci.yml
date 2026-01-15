@@ -1,4 +1,4 @@
-name: Day1 - Basic CI
+name: Day1 - CI
 
 on:
   push:

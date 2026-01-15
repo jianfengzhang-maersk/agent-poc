@@ -1,4 +1,4 @@
-name: CI (uv)
+name: Day2 - CI
 
 on:
   pull_request:
